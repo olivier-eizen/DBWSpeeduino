@@ -60,14 +60,14 @@
  * | 2352       |16          | Fuel2 table (X axis) (RPM)           |                                    |
  * | 2368       |16          | Fuel2 table (Y axis) (MAP/TPS)       |                                    |
  * | 2384       |1           | HOLE ??                              |                                    |
- * | 2385       |2           | X and Y sizes for WMI table          |                                    |
- * | 2387       |64          | WMI table (8x8)                      | @ref EEPROM_CONFIG12_MAP           |
- * | 2451       |8           | WMI table (X axis) (RPM)             |                                    |
- * | 2459       |8           | WMI table (Y axis) (MAP)             |                                    |
- * | 2467       |2           | X and Y sizes VVT2 table             |                                    |
- * | 2469       |64          | VVT2 table (8x8)                     | @ref EEPROM_CONFIG12_MAP2          |
- * | 2553       |8           | VVT2 table (X axis) (RPM)            |                                    |
- * | 2541       |8           | VVT2 table (Y axis) (MAP)            |                                    |
+ * | 2385       |2           | X and Y sizes for WMI table          |                                    | DBW TABLE
+ * | 2387       |64          | WMI table (8x8)                      | @ref EEPROM_CONFIG12_MAP           | DBW TABLE
+ * | 2451       |8           | WMI table (X axis) (RPM)             |                                    | DBW TABLE
+ * | 2459       |8           | WMI table (Y axis) (MAP)             |                                    | DBW TABLE
+ * | 2467       |2           | X and Y sizes VVT2 table             |                                    | DBW IDLE TABLE
+ * | 2469       |64          | VVT2 table (8x8)                     | @ref EEPROM_CONFIG12_MAP2          | DBW IDLE TABLE
+ * | 2553       |8           | VVT2 table (X axis) (RPM)            |                                    | DBW IDLE TABLE
+ * | 2541       |8           | VVT2 table (Y axis) (MAP)            |                                    | DBW IDLE TABLE
  * | 2549       |2           | X and Y sizes dwell table            |                                    |
  * | 2551       |16          | Dwell table (4x4)                    | @ref EEPROM_CONFIG12_MAP3          |
  * | 2567       |4           | Dwell table (X axis) (RPM)           |                                    |

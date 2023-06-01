@@ -1047,6 +1047,13 @@ void sendPageASCII()
       Serial.println(F("\nBoost lookup table"));
       serial_print_3dtable(&boostTableLookupDuty, boostTableLookupDuty.type_key);
       break;
+      
+
+    // case dbwPage:
+    //   Serial.println(F("\nDbw table"));
+    //   serial_print_3dtable(&dbwTable, dbwTable.type_key);
+    //   serial_print_3dtable(&dbwIdleTable, dbwIdleTable.type_key);
+    //   break;
 
     case warmupPage:
     case progOutsPage:
