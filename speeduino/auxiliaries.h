@@ -12,7 +12,7 @@ void vvtControl();
 void initialiseFan();
 void nitrousControl();
 void fanControl();
-void wmiControl();
+// void wmiControl();
 
 #define SIMPLE_BOOST_P  1
 #define SIMPLE_BOOST_I  1

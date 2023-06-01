@@ -314,7 +314,7 @@ void loop()
       //VVT may eventually need to be synced with the cam readings (ie run once per cam rev) but for now run at 30Hz
       vvtControl();
       //Water methanol injection
-      wmiControl();
+      // wmiControl(); //TODO:DBW
       #if defined(NATIVE_CAN_AVAILABLE)
       if (configPage2.canBMWCluster == true) { sendBMWCluster(); }
       if (configPage2.canVAGCluster == true) { sendVAGCluster(); }
@@ -416,19 +416,19 @@ void loop()
       BIT_CLEAR(TIMER_mask, BIT_TIMER_1HZ);
       readBaro(); //Infrequent baro readings are not an issue.
 
-      if ( (configPage10.wmiEnabled > 0) && (configPage10.wmiIndicatorEnabled > 0) )
-      {
-        // water tank empty
-        if (BIT_CHECK(currentStatus.status4, BIT_STATUS4_WMI_EMPTY) > 0)
-        {
-          // flash with 1sec interval
-          digitalWrite(pinWMIIndicator, !digitalRead(pinWMIIndicator));
-        }
-        else
-        {
-          digitalWrite(pinWMIIndicator, configPage10.wmiIndicatorPolarity ? HIGH : LOW);
-        } 
-      }
+      // if ( (configPage10.wmiEnabled > 0) && (configPage10.wmiIndicatorEnabled > 0) )
+      // {
+      //   // water tank empty
+      //   if (BIT_CHECK(currentStatus.status4, BIT_STATUS4_WMI_EMPTY) > 0)
+      //   {
+      //     // flash with 1sec interval
+      //     digitalWrite(pinWMIIndicator, !digitalRead(pinWMIIndicator));
+      //   }
+      //   else
+      //   {
+      //     digitalWrite(pinWMIIndicator, configPage10.wmiIndicatorPolarity ? HIGH : LOW);
+      //   } 
+      // }
 
       #ifdef SD_LOGGING
         if(configPage13.onboard_log_file_rate == LOGGER_RATE_1HZ) { writeSDLogEntry(); }

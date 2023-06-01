@@ -1323,33 +1323,52 @@ struct config10 {
   int8_t oilPressureMin;
   byte oilPressureMax;
 
-  byte oilPressureProtRPM[4];
+  byte oilPressureProtRPM[4]; // 141
   byte oilPressureProtMins[4];
 
-  byte wmiEnabled : 1; // Byte 149
-  byte wmiMode : 6;
+  byte dbwEnabled : 1;      // 150
+  byte dbwKP;               // 151
+  byte dbwKI;               // 152
+  byte dbwKD;               // 153
+  byte dbwPedalPin1 : 5;    // 154
+  byte dbwPedalPin2 : 5;    // 155
+  byte dbwThrotlePin1 : 5;  // 156
+  byte dbwThrotlePin2 : 5;  // 157
+  byte dbw1Pin : 6;         // 158
+  byte dbw2Pin : 6;         // 159
+  byte pedal1Min;           // 160
+  byte pedal1Max;           // 161
+  byte pedal2Min;           // 162
+  byte pedal2Max;           // 163
+  byte throttle1Min;        // 164
+  byte throttle1Max;        // 165
+  byte throttle2Min;        // 166
+  byte throttle2Max;        // 167
+
+  // byte wmiEnabled : 1; // Byte 149
+  // byte wmiMode : 6; // 149
   
-  byte wmiAdvEnabled : 1;
+  // byte wmiAdvEnabled : 1;
 
-  byte wmiTPS; // Byte 150
-  byte wmiRPM; // Byte 151
-  byte wmiMAP; // Byte 152
-  byte wmiMAP2; // Byte 153
-  byte wmiIAT; // Byte 154
-  int8_t wmiOffset; // Byte 155
+  // byte wmiTPS; // Byte 150
+  // byte wmiRPM; // Byte 151
+  // byte wmiMAP; // Byte 152
+  // byte wmiMAP2; // Byte 153
+  // byte wmiIAT; // Byte 154
+  // int8_t wmiOffset; // Byte 155
 
-  byte wmiIndicatorEnabled : 1; // 156
-  byte wmiIndicatorPin : 6;
-  byte wmiIndicatorPolarity : 1;
+  // byte wmiIndicatorEnabled : 1; // 156
+  // byte wmiIndicatorPin : 6;
+  // byte wmiIndicatorPolarity : 1;
 
-  byte wmiEmptyEnabled : 1; // 157
-  byte wmiEmptyPin : 6;
-  byte wmiEmptyPolarity : 1;
+  // byte wmiEmptyEnabled : 1; // 157
+  // byte wmiEmptyPin : 6;
+  // byte wmiEmptyPolarity : 1;
 
-  byte wmiEnabledPin; // 158
+  // byte wmiEnabledPin; // 158
 
-  byte wmiAdvBins[6]; //Bytes 159-164
-  byte wmiAdvAdj[6];  //Additional advance (in degrees)
+  // byte wmiAdvBins[6]; //Bytes 159-164
+  // byte wmiAdvAdj[6];  //Additional advance (in degrees)
                       //Bytes 165-170
   byte vvtCLminDuty;
   byte vvtCLmaxDuty;

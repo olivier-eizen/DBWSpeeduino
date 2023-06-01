@@ -255,8 +255,8 @@ void initialiseAll()
     wmiAdvTable.valueSize = SIZE_BYTE;
     wmiAdvTable.axisSize = SIZE_BYTE; //Set this table to use byte axis bins
     wmiAdvTable.xSize = 6;
-    wmiAdvTable.values = configPage10.wmiAdvAdj;
-    wmiAdvTable.axisX = configPage10.wmiAdvBins;
+    // wmiAdvTable.values = configPage10.wmiAdvAdj; // TODO:DBW
+    // wmiAdvTable.axisX = configPage10.wmiAdvBins; // TODO:DBW
 
     cltCalibrationTable.valueSize = SIZE_INT;
     cltCalibrationTable.axisSize = SIZE_INT;
@@ -2637,9 +2637,9 @@ void setPinMapping(byte boardID)
   if ( (configPage10.fuelPressureEnable) && (configPage10.fuelPressurePin < BOARD_MAX_IO_PINS) ) { pinFuelPressure = pinTranslateAnalog(configPage10.fuelPressurePin); }
   if ( (configPage10.oilPressureEnable) && (configPage10.oilPressurePin < BOARD_MAX_IO_PINS) ) { pinOilPressure = pinTranslateAnalog(configPage10.oilPressurePin); }
   
-  if ( (configPage10.wmiEmptyPin != 0) && (configPage10.wmiEmptyPin < BOARD_MAX_IO_PINS) ) { pinWMIEmpty = pinTranslate(configPage10.wmiEmptyPin); }
-  if ( (configPage10.wmiIndicatorPin != 0) && (configPage10.wmiIndicatorPin < BOARD_MAX_IO_PINS) ) { pinWMIIndicator = pinTranslate(configPage10.wmiIndicatorPin); }
-  if ( (configPage10.wmiEnabledPin != 0) && (configPage10.wmiEnabledPin < BOARD_MAX_IO_PINS) ) { pinWMIEnabled = pinTranslate(configPage10.wmiEnabledPin); }
+  // if ( (configPage10.wmiEmptyPin != 0) && (configPage10.wmiEmptyPin < BOARD_MAX_IO_PINS) ) { pinWMIEmpty = pinTranslate(configPage10.wmiEmptyPin); }
+  // if ( (configPage10.wmiIndicatorPin != 0) && (configPage10.wmiIndicatorPin < BOARD_MAX_IO_PINS) ) { pinWMIIndicator = pinTranslate(configPage10.wmiIndicatorPin); }
+  // if ( (configPage10.wmiEnabledPin != 0) && (configPage10.wmiEnabledPin < BOARD_MAX_IO_PINS) ) { pinWMIEnabled = pinTranslate(configPage10.wmiEnabledPin); }
   if ( (configPage10.vvt2Pin != 0) && (configPage10.vvt2Pin < BOARD_MAX_IO_PINS) ) { pinVVT_2 = pinTranslate(configPage10.vvt2Pin); }
   if ( (configPage13.onboard_log_trigger_Epin != 0 ) && (configPage13.onboard_log_trigger_Epin != 0) && (configPage13.onboard_log_tr5_Epin_pin < BOARD_MAX_IO_PINS) ) { pinSDEnable = pinTranslate(configPage13.onboard_log_tr5_Epin_pin); }
   
@@ -2850,20 +2850,20 @@ void setPinMapping(byte boardID)
   {
     pinMode(pinSDEnable, INPUT);
   }
-  if(configPage10.wmiEnabled > 0)
-  {
-    pinMode(pinWMIEnabled, OUTPUT);
-    if(configPage10.wmiIndicatorEnabled > 0)
-    {
-      pinMode(pinWMIIndicator, OUTPUT);
-      if (configPage10.wmiIndicatorPolarity > 0) { digitalWrite(pinWMIIndicator, HIGH); }
-    }
-    if( (configPage10.wmiEmptyEnabled > 0) && (!pinIsOutput(pinWMIEmpty)) )
-    {
-      if (configPage10.wmiEmptyPolarity == 0) { pinMode(pinWMIEmpty, INPUT_PULLUP); } //Normal setting
-      else { pinMode(pinWMIEmpty, INPUT); } //inverted setting
-    }
-  }  
+  // if(configPage10.wmiEnabled > 0)
+  // {
+  //   pinMode(pinWMIEnabled, OUTPUT);
+  //   if(configPage10.wmiIndicatorEnabled > 0)
+  //   {
+  //     pinMode(pinWMIIndicator, OUTPUT);
+  //     if (configPage10.wmiIndicatorPolarity > 0) { digitalWrite(pinWMIIndicator, HIGH); }
+  //   }
+  //   if( (configPage10.wmiEmptyEnabled > 0) && (!pinIsOutput(pinWMIEmpty)) )
+  //   {
+  //     if (configPage10.wmiEmptyPolarity == 0) { pinMode(pinWMIEmpty, INPUT_PULLUP); } //Normal setting
+  //     else { pinMode(pinWMIEmpty, INPUT); } //inverted setting
+  //   }
+  // }  
 
   //These must come after the above pinMode statements
   triggerPri_pin_port = portInputRegister(digitalPinToPort(pinTrigger));

@@ -675,7 +675,7 @@ int8_t correctionsIgn(int8_t base_advance)
 {
   int8_t advance;
   advance = correctionFlexTiming(base_advance);
-  advance = correctionWMITiming(advance);
+  // advance = correctionWMITiming(advance);
   advance = correctionIATretard(advance);
   advance = correctionCLTadvance(advance);
   advance = correctionIdleAdvance(advance);
@@ -722,17 +722,17 @@ int8_t correctionFlexTiming(int8_t advance)
   return (int8_t) ignFlexValue;
 }
 
-int8_t correctionWMITiming(int8_t advance)
-{
-  if( (configPage10.wmiEnabled >= 1) && (configPage10.wmiAdvEnabled == 1) && !BIT_CHECK(currentStatus.status4, BIT_STATUS4_WMI_EMPTY) ) //Check for wmi being enabled
-  {
-    if( (currentStatus.TPS >= configPage10.wmiTPS) && (currentStatus.RPM >= configPage10.wmiRPM) && (currentStatus.MAP/2 >= configPage10.wmiMAP) && ((currentStatus.IAT + CALIBRATION_TEMPERATURE_OFFSET) >= configPage10.wmiIAT) )
-    {
-      return (int16_t) advance + table2D_getValue(&wmiAdvTable, currentStatus.MAP/2) - OFFSET_IGNITION; //Negative values are achieved with offset
-    }
-  }
-  return advance;
-}
+// int8_t correctionWMITiming(int8_t advance)
+// {
+//   if( (configPage10.wmiEnabled >= 1) && (configPage10.wmiAdvEnabled == 1) && !BIT_CHECK(currentStatus.status4, BIT_STATUS4_WMI_EMPTY) ) //Check for wmi being enabled
+//   {
+//     if( (currentStatus.TPS >= configPage10.wmiTPS) && (currentStatus.RPM >= configPage10.wmiRPM) && (currentStatus.MAP/2 >= configPage10.wmiMAP) && ((currentStatus.IAT + CALIBRATION_TEMPERATURE_OFFSET) >= configPage10.wmiIAT) )
+//     {
+//       return (int16_t) advance + table2D_getValue(&wmiAdvTable, currentStatus.MAP/2) - OFFSET_IGNITION; //Negative values are achieved with offset
+//     }
+//   }
+//   return advance;
+// }
 /** Ignition correction for inlet air temperature (IAT).
  */
 int8_t correctionIATretard(int8_t advance)
