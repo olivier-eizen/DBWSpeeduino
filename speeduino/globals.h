@@ -743,11 +743,13 @@ struct statuses {
   byte oilPressure;  /**< Oil pressure in PSI */
   byte engineProtectStatus;
   byte fanDuty;
-  byte wmiPW;
+  byte pedal;
   volatile byte status4; ///< Status bits (See BIT_STATUS4_* defines on top of this file)
   int16_t vvt2Angle; //Has to be a long for PID calcs (CL VVT control)
-  byte vvt2TargetAngle;
-  long vvt2Duty; //Has to be a long for PID calcs (CL VVT control)
+  // byte vvt2TargetAngle; // 111
+  // long vvt2Duty; //Has to be a long for PID calcs (CL VVT control) 112
+  byte pedal1;
+  byte pedal2;
   byte outputsStatus;
   byte TS_SD_Status; //TunerStudios SD card status
 };
@@ -1330,20 +1332,23 @@ struct config10 {
   byte dbwKP;               // 151
   byte dbwKI;               // 152
   byte dbwKD;               // 153
-  byte dbwPedalPin1 : 5;    // 154
-  byte dbwPedalPin2 : 5;    // 155
+  byte dbwPedalPin1 : 5;    // 154 #
+  byte dbwPedalPin2 : 5;    // 155 #
   byte dbwThrotlePin1 : 5;  // 156
   byte dbwThrotlePin2 : 5;  // 157
   byte dbw1Pin : 6;         // 158
   byte dbw2Pin : 6;         // 159
-  byte pedal1Min;           // 160
-  byte pedal1Max;           // 161
-  byte pedal2Min;           // 162
-  byte pedal2Max;           // 163
-  byte throttle1Min;        // 164
-  byte throttle1Max;        // 165
-  byte throttle2Min;        // 166
-  byte throttle2Max;        // 167
+  byte pedal1Min;           // 160 # pedal Calibration
+  byte pedal1Max;           // 161 # pedal Calibration
+  byte pedal2Min;           // 162 # pedal Calibration
+  byte pedal2Max;           // 163 # pedal Calibration
+  byte throttle1Min;        // 164 dbw   Calibration
+  byte throttle1Max;        // 165 dbw   Calibration
+  byte throttle2Min;        // 166 dbw   Calibration
+  byte throttle2Max;        // 167 dbw   Calibration
+  byte pedal;               // 168
+  byte pedal1;              // 169
+  byte pedal2;              // 170
 
   // byte wmiEnabled : 1; // Byte 149
   // byte wmiMode : 6; // 149
@@ -1370,7 +1375,7 @@ struct config10 {
   // byte wmiAdvBins[6]; //Bytes 159-164
   // byte wmiAdvAdj[6];  //Additional advance (in degrees)
                       //Bytes 165-170
-  byte vvtCLminDuty;
+  byte vvtCLminDuty; // 171
   byte vvtCLmaxDuty;
   byte vvt2Pin : 6;
   byte vvt2Enabled : 1;

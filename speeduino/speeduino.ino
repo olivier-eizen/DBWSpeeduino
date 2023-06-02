@@ -321,6 +321,7 @@ void loop()
       #endif
       #if TPS_READ_FREQUENCY == 30
         readTPS();
+        readPedal();
       #endif
       readO2();
       readO2_2();

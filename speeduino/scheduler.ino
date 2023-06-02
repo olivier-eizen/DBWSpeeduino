@@ -85,14 +85,14 @@ void initialiseSchedulers()
 {
     //nullSchedule.Status = OFF;
 
-    fuelSchedule1.Status = OFF;
-    fuelSchedule2.Status = OFF;
-    fuelSchedule3.Status = OFF;
-    fuelSchedule4.Status = OFF;
-    fuelSchedule5.Status = OFF;
-    fuelSchedule6.Status = OFF;
-    fuelSchedule7.Status = OFF;
-    fuelSchedule8.Status = OFF;
+    fuelSchedule1.Status = NONE;
+    fuelSchedule2.Status = NONE;
+    fuelSchedule3.Status = NONE;
+    fuelSchedule4.Status = NONE;
+    fuelSchedule5.Status = NONE;
+    fuelSchedule6.Status = NONE;
+    fuelSchedule7.Status = NONE;
+    fuelSchedule8.Status = NONE;
 
     fuelSchedule1.schedulesSet = 0;
     fuelSchedule2.schedulesSet = 0;
@@ -103,14 +103,14 @@ void initialiseSchedulers()
     fuelSchedule7.schedulesSet = 0;
     fuelSchedule8.schedulesSet = 0;
 
-    ignitionSchedule1.Status = OFF;
-    ignitionSchedule2.Status = OFF;
-    ignitionSchedule3.Status = OFF;
-    ignitionSchedule4.Status = OFF;
-    ignitionSchedule5.Status = OFF;
-    ignitionSchedule6.Status = OFF;
-    ignitionSchedule7.Status = OFF;
-    ignitionSchedule8.Status = OFF;
+    ignitionSchedule1.Status = NONE;
+    ignitionSchedule2.Status = NONE;
+    ignitionSchedule3.Status = NONE;
+    ignitionSchedule4.Status = NONE;
+    ignitionSchedule5.Status = NONE;
+    ignitionSchedule6.Status = NONE;
+    ignitionSchedule7.Status = NONE;
+    ignitionSchedule8.Status = NONE;
 
     IGN1_TIMER_ENABLE();
     IGN2_TIMER_ENABLE();
@@ -831,7 +831,7 @@ extern void beginInjectorPriming()
 * This calls the relevant callback function (startCallback or endCallback) depending on the status (PENDING => Needs to run, RUNNING => Needs to stop) of the schedule.
 * The status of schedule is managed here based on startCallback /endCallback function called:
 * - startCallback - change scheduler into RUNNING state
-* - endCallback - change scheduler into OFF state (or PENDING if schedule.hasNextSchedule is set)
+* - endCallback - change scheduler into NONE state (or PENDING if schedule.hasNextSchedule is set)
 */
 //Timer3A (fuel schedule 1) Compare Vector
 #if (INJ_CHANNELS >= 1)
@@ -852,7 +852,7 @@ static inline void fuelSchedule1Interrupt() //Most ARM chips can simply call a f
     {
        //timer3Aqueue[0]->EndCallback();
        inj1EndFunction();
-       fuelSchedule1.Status = OFF; //Turn off the schedule
+       fuelSchedule1.Status = NONE; //Turn off the schedule
        fuelSchedule1.schedulesSet = 0;
        //SET_COMPARE(FUEL1_COMPARE, fuelSchedule1.endCompare);
 
@@ -867,7 +867,7 @@ static inline void fuelSchedule1Interrupt() //Most ARM chips can simply call a f
        }
        else { FUEL1_TIMER_DISABLE(); }
     }
-    else if (fuelSchedule1.Status == OFF) { FUEL1_TIMER_DISABLE(); } //Safety check. Turn off this output compare unit and return without performing any action
+    else if (fuelSchedule1.Status == NONE) { FUEL1_TIMER_DISABLE(); } //Safety check. Turn off this output compare unit and return without performing any action
   }
 #endif
 
@@ -889,7 +889,7 @@ static inline void fuelSchedule2Interrupt() //Most ARM chips can simply call a f
     {
        //fuelSchedule2.EndCallback();
        inj2EndFunction();
-       fuelSchedule2.Status = OFF; //Turn off the schedule
+       fuelSchedule2.Status = NONE; //Turn off the schedule
        fuelSchedule2.schedulesSet = 0;
 
        //If there is a next schedule queued up, activate it
@@ -924,7 +924,7 @@ static inline void fuelSchedule3Interrupt() //Most ARM chips can simply call a f
     {
        //fuelSchedule3.EndCallback();
        inj3EndFunction();
-       fuelSchedule3.Status = OFF; //Turn off the schedule
+       fuelSchedule3.Status = NONE; //Turn off the schedule
        fuelSchedule3.schedulesSet = 0;
 
        //If there is a next schedule queued up, activate it
@@ -959,7 +959,7 @@ static inline void fuelSchedule4Interrupt() //Most ARM chips can simply call a f
     {
        //fuelSchedule4.EndCallback();
        inj4EndFunction();
-       fuelSchedule4.Status = OFF; //Turn off the schedule
+       fuelSchedule4.Status = NONE; //Turn off the schedule
        fuelSchedule4.schedulesSet = 0;
 
        //If there is a next schedule queued up, activate it
@@ -1132,7 +1132,7 @@ static inline void ignitionSchedule1Interrupt() //Most ARM chips can simply call
     else if (ignitionSchedule1.Status == RUNNING)
     {
       ignitionSchedule1.EndCallback();
-      ignitionSchedule1.Status = OFF; //Turn off the schedule
+      ignitionSchedule1.Status = NONE; //Turn off the schedule
       ignitionSchedule1.schedulesSet = 0;
       ignitionSchedule1.endScheduleSetByDecoder = false;
       ignitionCount += 1; //Increment the ignition counter
@@ -1147,7 +1147,7 @@ static inline void ignitionSchedule1Interrupt() //Most ARM chips can simply call
       }
       else{ IGN1_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule1.Status == OFF)
+    else if (ignitionSchedule1.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN1_TIMER_DISABLE();
@@ -1172,7 +1172,7 @@ static inline void ignitionSchedule2Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule2.Status == RUNNING)
     {
-      ignitionSchedule2.Status = OFF; //Turn off the schedule
+      ignitionSchedule2.Status = NONE; //Turn off the schedule
       ignitionSchedule2.EndCallback();
       ignitionSchedule2.schedulesSet = 0;
       ignitionSchedule2.endScheduleSetByDecoder = false;
@@ -1188,7 +1188,7 @@ static inline void ignitionSchedule2Interrupt() //Most ARM chips can simply call
       }
       else{ IGN2_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule2.Status == OFF)
+    else if (ignitionSchedule2.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN2_TIMER_DISABLE();
@@ -1213,7 +1213,7 @@ static inline void ignitionSchedule3Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule3.Status == RUNNING)
     {
-       ignitionSchedule3.Status = OFF; //Turn off the schedule
+       ignitionSchedule3.Status = NONE; //Turn off the schedule
        ignitionSchedule3.EndCallback();
        ignitionSchedule3.schedulesSet = 0;
        ignitionSchedule3.endScheduleSetByDecoder = false;
@@ -1229,7 +1229,7 @@ static inline void ignitionSchedule3Interrupt() //Most ARM chips can simply call
        }
        else { IGN3_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule3.Status == OFF)
+    else if (ignitionSchedule3.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN3_TIMER_DISABLE();
@@ -1254,7 +1254,7 @@ static inline void ignitionSchedule4Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule4.Status == RUNNING)
     {
-       ignitionSchedule4.Status = OFF; //Turn off the schedule
+       ignitionSchedule4.Status = NONE; //Turn off the schedule
        ignitionSchedule4.EndCallback();
        ignitionSchedule4.schedulesSet = 0;
        ignitionSchedule4.endScheduleSetByDecoder = false;
@@ -1270,7 +1270,7 @@ static inline void ignitionSchedule4Interrupt() //Most ARM chips can simply call
        }
        else { IGN4_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule4.Status == OFF)
+    else if (ignitionSchedule4.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN4_TIMER_DISABLE();
@@ -1295,7 +1295,7 @@ static inline void ignitionSchedule5Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule5.Status == RUNNING)
     {
-      ignitionSchedule5.Status = OFF; //Turn off the schedule
+      ignitionSchedule5.Status = NONE; //Turn off the schedule
       ignitionSchedule5.EndCallback();
       ignitionSchedule5.schedulesSet = 0;
       ignitionSchedule5.endScheduleSetByDecoder = false;
@@ -1311,7 +1311,7 @@ static inline void ignitionSchedule5Interrupt() //Most ARM chips can simply call
       }
       else{ IGN5_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule5.Status == OFF)
+    else if (ignitionSchedule5.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN5_TIMER_DISABLE();
@@ -1336,7 +1336,7 @@ static inline void ignitionSchedule6Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule6.Status == RUNNING)
     {
-      ignitionSchedule6.Status = OFF; //Turn off the schedule
+      ignitionSchedule6.Status = NONE; //Turn off the schedule
       ignitionSchedule6.EndCallback();
       ignitionSchedule6.schedulesSet = 0;
       ignitionSchedule6.endScheduleSetByDecoder = false;
@@ -1352,7 +1352,7 @@ static inline void ignitionSchedule6Interrupt() //Most ARM chips can simply call
       }
       else{ IGN6_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule6.Status == OFF)
+    else if (ignitionSchedule6.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN6_TIMER_DISABLE();
@@ -1377,7 +1377,7 @@ static inline void ignitionSchedule7Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule7.Status == RUNNING)
     {
-      ignitionSchedule7.Status = OFF; //Turn off the schedule
+      ignitionSchedule7.Status = NONE; //Turn off the schedule
       ignitionSchedule7.EndCallback();
       ignitionSchedule7.schedulesSet = 0;
       ignitionSchedule7.endScheduleSetByDecoder = false;
@@ -1393,7 +1393,7 @@ static inline void ignitionSchedule7Interrupt() //Most ARM chips can simply call
       }
       else{ IGN7_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule7.Status == OFF)
+    else if (ignitionSchedule7.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN7_TIMER_DISABLE();
@@ -1418,7 +1418,7 @@ static inline void ignitionSchedule8Interrupt() //Most ARM chips can simply call
     }
     else if (ignitionSchedule8.Status == RUNNING)
     {
-      ignitionSchedule8.Status = OFF; //Turn off the schedule
+      ignitionSchedule8.Status = NONE; //Turn off the schedule
       ignitionSchedule8.EndCallback();
       ignitionSchedule8.schedulesSet = 0;
       ignitionSchedule8.endScheduleSetByDecoder = false;
@@ -1434,7 +1434,7 @@ static inline void ignitionSchedule8Interrupt() //Most ARM chips can simply call
       }
       else{ IGN8_TIMER_DISABLE(); }
     }
-    else if (ignitionSchedule8.Status == OFF)
+    else if (ignitionSchedule8.Status == NONE)
     {
       //Catch any spurious interrupts. This really shouldn't ever be called, but there as a safety
       IGN8_TIMER_DISABLE();
