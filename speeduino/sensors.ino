@@ -606,9 +606,11 @@ void readBat() {
 // DBW
 void readPedal() {
   if (configPage10.dbwEnabled == true) {
-    currentStatus.pedal1 = map(analogRead(configPage10.dbwPedalPin1), configPage10.pedal1Min, configPage10.pedal1Max, 0, 255);
-    currentStatus.pedal2 = map(analogRead(configPage10.dbwPedalPin2), configPage10.pedal2Min, configPage10.pedal2Max, 0, 255);
-    currentStatus.pedal = map((configPage10.pedal1 + configPage10.pedal2) / 2, 0, 255, 0, 100);  // to %
+    byte p1 = fastMap1023toX(configPage10.dbwPedalPin1, 255);
+    byte p2 = fastMap1023toX(configPage10.dbwPedalPin2, 255);
+    currentStatus.pedal1 = map(p1, configPage10.pedal1Min, configPage10.pedal1Max, 0, 100);
+    currentStatus.pedal2 = map(p2, configPage10.pedal2Min, configPage10.pedal2Max, 0, 100);
+    currentStatus.pedal = map((currentStatus.pedal1 + currentStatus.pedal2) / 2, 0, 255, 0, 100);  // to %
   }
 }
 

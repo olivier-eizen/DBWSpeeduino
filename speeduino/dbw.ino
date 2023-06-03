@@ -1,4 +1,4 @@
-#include "ArduPID.h"
+// #include "ArduPID.h"
 #include "Arduino.h"
 #include "auxiliaries.h"
 #include "decoders.h"
@@ -8,11 +8,8 @@
 #include "src/PID_v1/PID_v1.h"
 #include "timers.h"
 
-ArduPID dbwPID;
+// ArduPID dbwPID;
 double PEDAL, PWM, TPS;
-double Kp = configPage10.dbwKP;
-double Ki = configPage10.dbwKI;
-double Kd = configPage10.dbwKD;
 
 // void initDbw() {
 //   fan_pin_port = portOutputRegister(digitalPinToPort(pinFan));
@@ -35,7 +32,7 @@ void actuateDBW() {
 void dbw() {
   PEDAL = currentStatus.pedal;
   TPS = currentStatus.TPS;
-  dbwPID.compute();
+//   dbwPID.compute();
   if (PEDAL < 1 && TPS < 1) {
     analogWrite(configPage10.dbwThrotlePin1, LOW);
     analogWrite(configPage10.dbwThrotlePin2, LOW);
@@ -45,7 +42,7 @@ void dbw() {
 }
 
 // void calibrationAuto() {
-//   dbwPID.begin(&TPS, &PWM, &PEDAL, config10., Ki, Kd);
+//   dbwPID.begin(&TPS, &PWM, &PEDAL, config10., configPage10.dbwKI, configPage10.dbwKD);
 
 //   PIDAutotuner tuner = PIDAutotuner();
 //   tuner.setTargetInputValue(90);
@@ -64,14 +61,14 @@ void dbw() {
 
 //     while (micros() - microseconds < loopInterval) delayMicroseconds(1);
 //   }
-//   Kp = tuner.getKp();
-//   Ki = tuner.getKi();
-//   Kd = tuner.getKd();
+//   configPage10.dbwKP = tuner.getKp();
+//   configPage10.dbwKI = tuner.getKi();
+//   configPage10.dbwKD = tuner.getKd();
 //   Serial.print("KP ");
-//   Serial.print(Kp);
+//   Serial.print(configPage10.dbwKP);
 //   Serial.print(" KI ");
-//   Serial.print(Ki);
+//   Serial.print(configPage10.dbwKI);
 //   Serial.print(" KD ");
-//   Serial.println(Kd);
+//   Serial.println(configPage10.dbwKD);
 //   dbwPID.stop();
 // }

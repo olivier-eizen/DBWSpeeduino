@@ -152,18 +152,18 @@ inline void refreshIgnitionSchedule1(unsigned long timeToEnd) __attribute__((alw
 #endif
 #endif
 /** Schedule statuses.
- * - NONE - Schedule turned off and there is no scheduled plan
+ * - OFF - Schedule turned off and there is no scheduled plan
  * - PENDING - There's a scheduled plan, but is has not started to run yet
  * - STAGED - (???, Not used)
  * - RUNNING - Schedule is currently running
  */
-enum ScheduleStatus {NONE, PENDING, STAGED, RUNNING}; //The statuses that a schedule can have
+enum ScheduleStatus {OFF, PENDING, STAGED, RUNNING}; //The statuses that a schedule can have
 
 /** Ignition schedule.
  */
 struct Schedule {
   volatile unsigned long duration;///< Scheduled duration (uS ?)
-  volatile ScheduleStatus Status; ///< Schedule status: NONE, PENDING, STAGED, RUNNING
+  volatile ScheduleStatus Status; ///< Schedule status: OFF, PENDING, STAGED, RUNNING
   volatile byte schedulesSet;     ///< A counter of how many times the schedule has been set
   void (*StartCallback)();        ///< Start Callback function for schedule
   void (*EndCallback)();          ///< End Callback function for schedule
@@ -182,7 +182,7 @@ struct Schedule {
 */
 struct FuelSchedule {
   volatile unsigned long duration;///< Scheduled duration (uS ?)
-  volatile ScheduleStatus Status; ///< Schedule status: NONE, PENDING, STAGED, RUNNING
+  volatile ScheduleStatus Status; ///< Schedule status: OFF, PENDING, STAGED, RUNNING
   volatile byte schedulesSet; ///< A counter of how many times the schedule has been set
   volatile COMPARE_TYPE startCompare; ///< The counter value of the timer when this will start
   volatile COMPARE_TYPE endCompare;   ///< The counter value of the timer when this will end
@@ -222,7 +222,7 @@ static inline COMPARE_TYPE setQueue(volatile Schedule *queue[], Schedule *schedu
   unsigned int tmpQueue[4];
 
   //Set the initial queue state. This order matches the tmpQueue order
-  if(schedule1->Status == NONE)
+  if(schedule1->Status == OFF)
   {
     queue[0] = schedule2;
     queue[1] = schedule2;
@@ -237,7 +237,7 @@ static inline COMPARE_TYPE setQueue(volatile Schedule *queue[], Schedule *schedu
     tmpQueue[1] = schedule1->endCompare - CNT;
   }
 
-  if(schedule2->Status == NONE)
+  if(schedule2->Status == OFF)
   {
     queue[2] = schedule1;
     queue[3] = schedule1;

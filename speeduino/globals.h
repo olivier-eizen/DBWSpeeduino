@@ -1342,13 +1342,11 @@ struct config10 {
   byte pedal1Max;           // 161 # pedal Calibration
   byte pedal2Min;           // 162 # pedal Calibration
   byte pedal2Max;           // 163 # pedal Calibration
-  byte throttle1Min;        // 164 dbw   Calibration
-  byte throttle1Max;        // 165 dbw   Calibration
-  byte throttle2Min;        // 166 dbw   Calibration
-  byte throttle2Max;        // 167 dbw   Calibration
-  byte pedal;               // 168
-  byte pedal1;              // 169
-  byte pedal2;              // 170
+  byte throttle1Min;        // 164 # dbw   Calibration
+  byte throttle1Max;        // 165 # dbw   Calibration
+  byte throttle2Min;        // 166 # dbw   Calibration
+  byte throttle2Max;        // 167 # dbw   Calibration
+
 
   // byte wmiEnabled : 1; // Byte 149
   // byte wmiMode : 6; // 149
