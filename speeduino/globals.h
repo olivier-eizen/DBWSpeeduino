@@ -221,7 +221,8 @@
 #define BIT_STATUS3_NSQUIRTS2     6
 #define BIT_STATUS3_NSQUIRTS3     7
 
-#define BIT_STATUS4_WMI_EMPTY     0 //Indicates whether the WMI tank is empty
+// #define BIT_STATUS4_WMI_EMPTY     0 //Indicates whether the WMI tank is empty
+#define BIT_STATUS4_DBW           0    //Indicates whether the WMI tank is empty
 #define BIT_STATUS4_VVT1_ERROR    1 //VVT1 cam angle within limits or not
 #define BIT_STATUS4_VVT2_ERROR    2 //VVT2 cam angle within limits or not
 #define BIT_STATUS4_FAN           3 //Fan Status
@@ -1328,16 +1329,17 @@ struct config10 {
   byte oilPressureProtRPM[4]; // 141
   byte oilPressureProtMins[4];
 
-  byte dbwEnabled : 1;      // 150
+  byte unused11_149;
+  byte dbwEnabled : 1; byte unused11_150 : 7;      // 150
   byte dbwKP;               // 151
   byte dbwKI;               // 152
   byte dbwKD;               // 153
-  byte dbwPedalPin1 : 5;    // 154 #
-  byte dbwPedalPin2 : 5;    // 155 #
-  byte dbwThrotlePin1 : 5;  // 156
-  byte dbwThrotlePin2 : 5;  // 157
-  byte dbw1Pin : 6;         // 158
-  byte dbw2Pin : 6;         // 159
+  byte dbwPedalPin1 : 5; byte unused11_154 : 3;     // 154 #
+  byte dbwPedalPin2 : 5; byte unused11_155 : 3;     // 155 #
+  byte dbwThrotlePin1 : 5; byte unused11_156 : 3;   // 156
+  byte dbwThrotlePin2 : 5; byte unused11_157 : 3;   // 157
+  byte dbw1Pin : 6; byte unused11_158 : 2;          // 158
+  byte dbw2Pin : 6; byte unused11_159 : 2;          // 159
   byte pedal1Min;           // 160 # pedal Calibration
   byte pedal1Max;           // 161 # pedal Calibration
   byte pedal2Min;           // 162 # pedal Calibration
@@ -1348,10 +1350,9 @@ struct config10 {
   byte throttle2Max;        // 167 # dbw   Calibration
 
 
-  // byte wmiEnabled : 1; // Byte 149
-  // byte wmiMode : 6; // 149
-  
-  // byte wmiAdvEnabled : 1;
+  // byte wmiEnabled : 1;     // 149
+  // byte wmiMode : 6;        // 149
+  // byte wmiAdvEnabled : 1;  // 149
 
   // byte wmiTPS; // Byte 150
   // byte wmiRPM; // Byte 151
@@ -1371,8 +1372,7 @@ struct config10 {
   // byte wmiEnabledPin; // 158
 
   // byte wmiAdvBins[6]; //Bytes 159-164
-  // byte wmiAdvAdj[6];  //Additional advance (in degrees)
-                      //Bytes 165-170
+  // byte wmiAdvAdj[6];  //Additional advance (in degrees) //Bytes 165-170
   byte vvtCLminDuty; // 171
   byte vvtCLmaxDuty;
   byte vvt2Pin : 6;

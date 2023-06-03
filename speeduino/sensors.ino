@@ -606,17 +606,23 @@ void readBat() {
 // DBW
 void readPedal() {
   if (configPage10.dbwEnabled == true) {
-    byte p1 = fastMap1023toX(configPage10.dbwPedalPin1, 255);
-    byte p2 = fastMap1023toX(configPage10.dbwPedalPin2, 255);
-    currentStatus.pedal1 = map(p1, configPage10.pedal1Min, configPage10.pedal1Max, 0, 100);
-    currentStatus.pedal2 = map(p2, configPage10.pedal2Min, configPage10.pedal2Max, 0, 100);
-    currentStatus.pedal = map((currentStatus.pedal1 + currentStatus.pedal2) / 2, 0, 255, 0, 100);  // to %
+    byte tempPEDAL1 = fastMap1023toX(analogRead(configPage10.dbwPedalPin1), 255);
+    byte tempPEDAL2 = fastMap1023toX(analogRead(configPage10.dbwPedalPin2), 255);
+    
+    currentStatus.pedal1 = map(tempPEDAL1, configPage10.pedal1Min, configPage10.pedal1Max, 0, 200);
+    currentStatus.pedal2 = map(tempPEDAL2, configPage10.pedal2Min, configPage10.pedal2Max, 0, 200);
+    
+    currentStatus.pedal = (currentStatus.pedal1 + currentStatus.pedal2) / 2;
   }
 }
 
 byte readTpsDBW() {
-  int tps1 = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
-  int tps2 = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+  byte tempTPS1 = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
+  byte tempTPS2 = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+
+  byte tps1 = map(tempTPS1, configPage10.throttle1Min, configPage10.throttle1Max, 0, 200);
+  byte tps2 = map(tempTPS2, configPage10.throttle2Min, configPage10.throttle2Max, 0, 200);
+  
   return (tps1 + tps2) / 2;
 }
 

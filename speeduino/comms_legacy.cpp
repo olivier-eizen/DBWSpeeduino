@@ -123,7 +123,7 @@ void legacySerialCommand()
         byte cmdValue = Serial.read();
         uint16_t cmdCombined = word(cmdGroup, cmdValue);
 
-        if ( ((cmdCombined >= TS_CMD_INJ1_ON) && (cmdCombined <= TS_CMD_IGN8_50PC)) || (cmdCombined == TS_CMD_TEST_ENBL) || (cmdCombined == TS_CMD_TEST_DSBL) )
+        if ( ((cmdCombined >= TS_CMD_INJ1_ON) && (cmdCombined <= TS_CMD_THROTTLE_CALIB)) || (cmdCombined == TS_CMD_TEST_ENBL) || (cmdCombined == TS_CMD_TEST_DSBL) )
         {
           //Hardware test buttons
           if (currentStatus.RPM == 0) { TS_CommandButtonsHandler(cmdCombined); }
