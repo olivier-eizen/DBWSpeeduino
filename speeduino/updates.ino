@@ -567,13 +567,13 @@ void doUpdates()
     {
       //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they only need to be multiplied by 2 when updating
       multiplyTableLoad(&vvtTable, vvtTable.type_key, 2);
-      multiplyTableLoad(&vvt2Table, vvt2Table.type_key, 2);
+      // multiplyTableLoad(&vvt2Table, vvt2Table.type_key, 2);
     }
     else
     {
       //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they need to be divided by 2 when updating
       divideTableLoad(&vvtTable, vvtTable.type_key, 2);
-      divideTableLoad(&vvt2Table, vvt2Table.type_key, 2);
+      // divideTableLoad(&vvt2Table, vvt2Table.type_key, 2);
     }
 
 

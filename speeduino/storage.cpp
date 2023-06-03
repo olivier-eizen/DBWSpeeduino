@@ -277,13 +277,13 @@ void writeConfig(uint8_t pageNum)
 
     case wmiMapPage:
       /*---------------------------------------------------
-      | WMI and Dwell tables (See storage.h for data layout) - Page 12
-      | 8x8 WMI table itself + the 8 values along each of the axis
-      | 8x8 VVT2 table + the 8 values along each of the axis
+      | DBW and Dwell tables (See storage.h for data layout) - Page 12
+      | 8x8 DBW table itself + the 8 values along each of the axis
+      | 8x8 DBW idle table + the 8 values along each of the axis
       | 4x4 Dwell table itself + the 4 values along each of the axis
       -----------------------------------------------------*/
-      result = writeTable(&wmiTable, decltype(wmiTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP));
-      result = writeTable(&vvt2Table, decltype(vvt2Table)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP2));
+      result = writeTable(&dbwTable, decltype(dbwTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP));
+      result = writeTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP2));
       result = writeTable(&dwellTable, decltype(dwellTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP3));
       break;
       
@@ -452,8 +452,8 @@ void loadConfig()
 
   //*********************************************************************************************************************************************************************************
   // WMI, VVT2 and Dwell table load
-  loadTable(&wmiTable, decltype(wmiTable)::type_key, EEPROM_CONFIG12_MAP);
-  loadTable(&vvt2Table, decltype(vvt2Table)::type_key, EEPROM_CONFIG12_MAP2);
+  loadTable(&dbwTable, decltype(dbwTable)::type_key, EEPROM_CONFIG12_MAP);
+  loadTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, EEPROM_CONFIG12_MAP2);
   loadTable(&dwellTable, decltype(dwellTable)::type_key, EEPROM_CONFIG12_MAP3);
 
   //*********************************************************************************************************************************************************************************
