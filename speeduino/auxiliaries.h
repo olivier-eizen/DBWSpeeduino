@@ -10,6 +10,7 @@ void boostByGear();
 void idleControl();
 void vvtControl();
 void initialiseFan();
+void initialiseDbw();
 void nitrousControl();
 void fanControl();
 // void wmiControl();
@@ -68,6 +69,12 @@ volatile PORT_TYPE *vvt2_pin_port;
 volatile PINMASK_TYPE vvt2_pin_mask;
 volatile PORT_TYPE *fan_pin_port;
 volatile PINMASK_TYPE fan_pin_mask;
+
+volatile PORT_TYPE *dbw1_pin_port;
+volatile PINMASK_TYPE dbw1_pin_mask;
+volatile PORT_TYPE *dbw2_pin_port;
+volatile PINMASK_TYPE dbw2_pin_mask;
+
 volatile PORT_TYPE *n2o_stage1_pin_port;
 volatile PINMASK_TYPE n2o_stage1_pin_mask;
 volatile PORT_TYPE *n2o_stage2_pin_port;

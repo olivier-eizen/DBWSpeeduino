@@ -1348,7 +1348,9 @@ struct config10 {
   byte throttle1Max;        // 165 # dbw   Calibration
   byte throttle2Min;        // 166 # dbw   Calibration
   byte throttle2Max;        // 167 # dbw   Calibration
-
+  byte unused11_168; 
+  byte unused11_169; 
+  byte unused11_170; 
 
   // byte wmiEnabled : 1;     // 149
   // byte wmiMode : 6;        // 149
@@ -1372,7 +1374,8 @@ struct config10 {
   // byte wmiEnabledPin; // 158
 
   // byte wmiAdvBins[6]; //Bytes 159-164
-  // byte wmiAdvAdj[6];  //Additional advance (in degrees) //Bytes 165-170
+  // byte wmiAdvAdj[6];  //Additional advance (in degrees) 
+  //Bytes 165-170
   byte vvtCLminDuty; // 171
   byte vvtCLmaxDuty;
   byte vvt2Pin : 6;
@@ -1552,8 +1555,10 @@ extern byte pinBaro; //Pin that an external barometric pressure sensor is attach
 extern byte pinResetControl; // Output pin used control resetting the Arduino
 extern byte pinFuelPressure;
 extern byte pinOilPressure;
-extern byte pinWMIEmpty; // Water tank empty sensor
-extern byte pinWMIIndicator; // No water indicator bulb
+extern byte pinDbw1Input;
+extern byte pinDbw2Input;
+// extern byte pinWMIEmpty; // Water tank empty sensor
+// extern byte pinWMIIndicator; // No water indicator bulb
 extern byte pinWMIEnabled; // ON-OFF output to relay/pump/solenoid
 extern byte pinMC33810_1_CS;
 extern byte pinMC33810_2_CS;

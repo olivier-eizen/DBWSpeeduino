@@ -4,3 +4,4 @@ void dbwCalibrationAuto();
 void dbwCalibrationPedalMin();
 void dbwCalibrationPedalMax();
 void dbwCalibrationTPS();
+void initialiseDbw();

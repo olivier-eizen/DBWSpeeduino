@@ -14,14 +14,20 @@ ArduPID dbwPID;
 double PEDAL, PWM, TPS;
 unsigned long loopInterval = 1000;
 
+void initialiseDbw() {
+  dbw1_pin_port = portOutputRegister(digitalPinToPort(pinFan));
+  dbw1_pin_mask = digitalPinToBitMask(pinFan);
+  dbw2_pin_port = portOutputRegister(digitalPinToPort(pinFan));
+  dbw2_pin_mask = digitalPinToBitMask(pinFan);
+}
 
 void actuateDBW() {
   if (PWM > 0) {
-    analogWrite(configPage10.dbwThrotlePin1, abs(PWM));
-    analogWrite(configPage10.dbwThrotlePin2, LOW);
+    analogWrite(configPage10.dbw1Pin, abs(PWM));
+    analogWrite(configPage10.dbw2Pin, LOW);
   } else {
-    analogWrite(configPage10.dbwThrotlePin1, LOW);
-    analogWrite(configPage10.dbwThrotlePin2, abs(PWM));
+    analogWrite(configPage10.dbw1Pin, LOW);
+    analogWrite(configPage10.dbw2Pin, abs(PWM));
   }
 }
 
@@ -31,8 +37,8 @@ void dbw() {
     TPS = currentStatus.TPS;
     dbwPID.compute();
     if (PEDAL < 1 && TPS < 1) {
-      analogWrite(configPage10.dbwThrotlePin1, LOW);
-      analogWrite(configPage10.dbwThrotlePin2, LOW);
+      analogWrite(configPage10.dbw1Pin, LOW);
+      analogWrite(configPage10.dbw2Pin, LOW);
     } else {
       actuateDBW();
     }
@@ -62,18 +68,18 @@ void dbwCalibrationPedalMax() {
 
 void dbwCalibrationTPS() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
-    // Maximum
-    analogWrite(configPage10.dbwThrotlePin1, HIGH);
-    analogWrite(configPage10.dbwThrotlePin2, HIGH);
-    delay(250);
-    configPage10.throttle1Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
-    configPage10.throttle2Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
     // Minimum
-    analogWrite(configPage10.dbwThrotlePin1, LOW);
-    analogWrite(configPage10.dbwThrotlePin2, LOW);
+    analogWrite(pinDbw1Input, LOW);
+    analogWrite(pinDbw2Input, LOW);
     delay(250);
     configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+    // Maximum
+    analogWrite(pinDbw1Input, HIGH);
+    analogWrite(pinDbw2Input, HIGH);
+    delay(250);
+    configPage10.throttle1Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
+    configPage10.throttle2Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
     writeConfig(10);
   }
 }

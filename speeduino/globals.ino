@@ -242,8 +242,10 @@ byte pinBaro; //Pin that an al barometric pressure sensor is attached to (If use
 byte pinResetControl; // Output pin used control resetting the Arduino
 byte pinFuelPressure;
 byte pinOilPressure;
-byte pinWMIEmpty; // Water tank empty sensor
-byte pinWMIIndicator; // No water indicator bulb
+byte pinDbw1Input;
+byte pinDbw2Input;
+// byte pinWMIEmpty; // Water tank empty sensor
+// byte pinWMIIndicator; // No water indicator bulb
 byte pinWMIEnabled; // ON-OFF output to relay/pump/solenoid 
 byte pinMC33810_1_CS;
 byte pinMC33810_2_CS;

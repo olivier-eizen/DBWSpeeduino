@@ -1353,8 +1353,8 @@ void setPinMapping(byte boardID)
       pinResetControl = 43; //Reset control output
       pinBaro = A5;
       pinVSS = 20;
-      pinWMIEmpty = 46;
-      pinWMIIndicator = 44;
+      pinDbw2Input = 46;
+      pinDbw1Input = 44;
       pinWMIEnabled = 42;
 
       #if defined(CORE_TEENSY35)
@@ -1859,8 +1859,8 @@ void setPinMapping(byte boardID)
       pinFlex = 2; // Flex sensor
       pinResetControl = 43; //Reset control output
       pinVSS = 3; //VSS input pin
-      pinWMIEmpty = 31; //(placeholder)
-      pinWMIIndicator = 33; //(placeholder)
+      pinDbw2Input = 31; //(placeholder)
+      pinDbw1Input = 33; //(placeholder)
       pinWMIEnabled = 35; //(placeholder)
       pinIdleUp = 37; //(placeholder)
       pinCTPS = A6; //(placeholder)
@@ -1907,8 +1907,8 @@ void setPinMapping(byte boardID)
       pinFlex = PD7; // Flex sensor
       pinResetControl = PB7; //Reset control output
       pinVSS = PB6; //VSS input pin
-      pinWMIEmpty = PD15; //(placeholder)
-      pinWMIIndicator = PD13; //(placeholder)
+      pinDbw2Input = PD15; //(placeholder)
+      pinDbw1Input = PD13; //(placeholder)
       pinWMIEnabled = PE15; //(placeholder)
       pinIdleUp = PE14; //(placeholder)
       pinCTPS = PA6; //(placeholder)
@@ -2633,12 +2633,14 @@ void setPinMapping(byte boardID)
   if ( (configPage6.useEMAP != 0) && (configPage10.EMAPPin < BOARD_MAX_IO_PINS) ) { pinEMAP = pinTranslateAnalog(configPage10.EMAPPin); }
   if ( (configPage10.fuel2InputPin != 0) && (configPage10.fuel2InputPin < BOARD_MAX_IO_PINS) ) { pinFuel2Input = pinTranslate(configPage10.fuel2InputPin); }
   if ( (configPage10.spark2InputPin != 0) && (configPage10.spark2InputPin < BOARD_MAX_IO_PINS) ) { pinSpark2Input = pinTranslate(configPage10.spark2InputPin); }
+  if ( (configPage10.dbw1Pin != 0) && (configPage10.dbw1Pin < BOARD_MAX_IO_PINS) ) { pinDbw1Input = pinTranslate(configPage10.dbw1Pin); }
+  if ( (configPage10.dbw2Pin != 0) && (configPage10.dbw2Pin < BOARD_MAX_IO_PINS) ) { pinDbw2Input = pinTranslate(configPage10.dbw2Pin); }
   if ( (configPage2.vssPin != 0) && (configPage2.vssPin < BOARD_MAX_IO_PINS) ) { pinVSS = pinTranslate(configPage2.vssPin); }
   if ( (configPage10.fuelPressureEnable) && (configPage10.fuelPressurePin < BOARD_MAX_IO_PINS) ) { pinFuelPressure = pinTranslateAnalog(configPage10.fuelPressurePin); }
   if ( (configPage10.oilPressureEnable) && (configPage10.oilPressurePin < BOARD_MAX_IO_PINS) ) { pinOilPressure = pinTranslateAnalog(configPage10.oilPressurePin); }
   
-  // if ( (configPage10.wmiEmptyPin != 0) && (configPage10.wmiEmptyPin < BOARD_MAX_IO_PINS) ) { pinWMIEmpty = pinTranslate(configPage10.wmiEmptyPin); }
-  // if ( (configPage10.wmiIndicatorPin != 0) && (configPage10.wmiIndicatorPin < BOARD_MAX_IO_PINS) ) { pinWMIIndicator = pinTranslate(configPage10.wmiIndicatorPin); }
+  // if ( (configPage10.wmiEmptyPin != 0) && (configPage10.wmiEmptyPin < BOARD_MAX_IO_PINS) ) { pinDbw2Input = pinTranslate(configPage10.wmiEmptyPin); }
+  // if ( (configPage10.wmiIndicatorPin != 0) && (configPage10.wmiIndicatorPin < BOARD_MAX_IO_PINS) ) { pinDbw1Input = pinTranslate(configPage10.wmiIndicatorPin); }
   // if ( (configPage10.wmiEnabledPin != 0) && (configPage10.wmiEnabledPin < BOARD_MAX_IO_PINS) ) { pinWMIEnabled = pinTranslate(configPage10.wmiEnabledPin); }
   if ( (configPage10.vvt2Pin != 0) && (configPage10.vvt2Pin < BOARD_MAX_IO_PINS) ) { pinVVT_2 = pinTranslate(configPage10.vvt2Pin); }
   if ( (configPage13.onboard_log_trigger_Epin != 0 ) && (configPage13.onboard_log_trigger_Epin != 0) && (configPage13.onboard_log_tr5_Epin_pin < BOARD_MAX_IO_PINS) ) { pinSDEnable = pinTranslate(configPage13.onboard_log_tr5_Epin_pin); }
@@ -2838,6 +2840,18 @@ void setPinMapping(byte boardID)
     if (configPage10.spark2InputPullup == true) { pinMode(pinSpark2Input, INPUT_PULLUP); } //With pullup
     else { pinMode(pinSpark2Input, INPUT); } //Normal input
   }
+  // ****
+  // if( (configPage10.dbwEnabled == 1) && (!pinIsOutput(pinSpark2Input)) )
+  // {
+  //   if (configPage10.spark2InputPullup == true) { pinMode(pinSpark2Input, INPUT_PULLUP); } //With pullup
+  //   else { pinMode(pinSpark2Input, INPUT); } //Normal input
+  // }
+  // if( (configPage10.dbwEnabled == 1) && (!pinIsOutput(pinSpark2Input)) )
+  // {
+  //   if (configPage10.spark2InputPullup == true) { pinMode(pinSpark2Input, INPUT_PULLUP); } //With pullup
+  //   else { pinMode(pinSpark2Input, INPUT); } //Normal input
+  // }
+  // ****
   if( (configPage10.fuelPressureEnable > 0)  && (!pinIsOutput(pinFuelPressure)) )
   {
     pinMode(pinFuelPressure, INPUT);
@@ -2850,19 +2864,23 @@ void setPinMapping(byte boardID)
   {
     pinMode(pinSDEnable, INPUT);
   }
+  if(configPage10.dbwEnabled == 1) {
+    pinMode(pinDbw1Input, OUTPUT);
+    pinMode(pinDbw2Input, OUTPUT);
+  } 
   // if(configPage10.wmiEnabled > 0) {
   //   pinMode(pinWMIEnabled, OUTPUT);
   //   if(configPage10.wmiIndicatorEnabled > 0) {
-  //     pinMode(pinWMIIndicator, OUTPUT);
+  //     pinMode(pinDbw1Input, OUTPUT);
   //     if (configPage10.wmiIndicatorPolarity > 0) { 
-  //       digitalWrite(pinWMIIndicator, HIGH); 
+  //       digitalWrite(pinDbw1Input, HIGH); 
   //     }
   //   }
-  //   if( (configPage10.wmiEmptyEnabled > 0) && (!pinIsOutput(pinWMIEmpty)) ) {
+  //   if( (configPage10.wmiEmptyEnabled > 0) && (!pinIsOutput(pinDbw2Input)) ) {
   //     if (configPage10.wmiEmptyPolarity == 0) { 
-  //       pinMode(pinWMIEmpty, INPUT_PULLUP); 
+  //       pinMode(pinDbw2Input, INPUT_PULLUP); 
   //     } else { 
-  //       pinMode(pinWMIEmpty, INPUT); 
+  //       pinMode(pinDbw2Input, INPUT); 
   //     } //inverted setting
   //   }
   // }  
