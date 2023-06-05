@@ -10,7 +10,9 @@
 #include "scheduledIO.h"
 #include "sensors.h"
 #include "storage.h"
+#include "maths.h"
 #include "utilities.h"
+#include "dbw.h"
 #ifdef USE_MC33810
 #include "acc_mc33810.h"
 #endif
@@ -421,23 +423,18 @@ void TS_CommandButtonsHandler(uint16_t buttonCommand) {
 
     // DBW
     case TS_CMD_DBW_SELF_CALIB:
-      configPage10.throttle1Min = 0;
-      configPage10.throttle1Max = 0;
-      configPage10.throttle2Min = 0;
-      configPage10.throttle2Max = 0;
-      writeConfig(10);
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW); // trouver un moyen de reset 
+      dbwCalibrationAuto();
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
       break;
     case TS_CMD_PEDAL_MIN_CALIB:
-      configPage10.dbwKP = 0;
-      configPage10.dbwKI = 0;
-      configPage10.dbwKD = 0;
-      writeConfig(10);
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW); // trouver un moyen de reset 
+      dbwCalibrationPedalMin();
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
       break;
     case TS_CMD_PEDAL_MAX_CALIB:
+      dbwCalibrationPedalMax();
       break;
     case TS_CMD_THROTTLE_CALIB:
+      dbwCalibrationTPS();
       break;
 
     // VSS Calibration routines

@@ -92,6 +92,9 @@ void readO2();
 void readBat();
 void readBaro();
 void readPedal();
+// dbw
+void readPedal();
+byte readTpsDBW();
 
 #if defined(ANALOG_ISR)
 volatile int AnChannel[15];
