@@ -153,8 +153,18 @@
 
 /*
 ***********************************************************************************************************
+* DBW
+*/
+  #define ENABLE_DBW_TIMER()    TIMSK1 |= (1 << OCIE1B)
+  #define DISABLE_DBW_TIMER()   TIMSK1 &= ~(1 << OCIE1B)
+  #define DBW_TIMER_COMPARE     OCR1B
+  #define DBW_TIMER_COUNTER     TCNT1
+  
+/*
+***********************************************************************************************************
 * CAN / Second serial
 */
+
 
 
 #endif //CORE_AVR

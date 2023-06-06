@@ -9,24 +9,31 @@
 #include "src/PID_v1/PID_v1.h"
 #include "storage.h"
 #include "timers.h"
-
+#define frequencePWMde490hz 0b00000100
 ArduPID dbwPID;
-double PEDAL, PWM, TPS;
+double PEDAL; 
+double PWM; 
+double TPS;
 unsigned long loopInterval = 1000;
 
 void initialiseDbw() {
-  dbw1_pin_port = portOutputRegister(digitalPinToPort(pinFan));
-  dbw1_pin_mask = digitalPinToBitMask(pinFan);
-  dbw2_pin_port = portOutputRegister(digitalPinToPort(pinFan));
-  dbw2_pin_mask = digitalPinToBitMask(pinFan);
+  if (configPage10.dbwEnabled == 1) {
+    pinMode(configPage10.dbw1Pin, OUTPUT);
+    pinMode(configPage10.dbw2Pin, OUTPUT);
+    
+    dbwPID.setOutputLimits(-255, 255);
+    dbwPID.setWindUpLimits(-20, 20);
+
+    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+  }
 }
 
 void actuateDBW() {
   if (PWM > 0) {
     analogWrite(configPage10.dbw1Pin, abs(PWM));
-    analogWrite(configPage10.dbw2Pin, LOW);
+    analogWrite(configPage10.dbw2Pin, 0);
   } else {
-    analogWrite(configPage10.dbw1Pin, LOW);
+    analogWrite(configPage10.dbw1Pin, 0);
     analogWrite(configPage10.dbw2Pin, abs(PWM));
   }
 }
@@ -36,9 +43,9 @@ void dbw() {
     PEDAL = currentStatus.pedal;
     TPS = currentStatus.TPS;
     dbwPID.compute();
-    if (PEDAL < 1 && TPS < 1) {
-      analogWrite(configPage10.dbw1Pin, LOW);
-      analogWrite(configPage10.dbw2Pin, LOW);
+    if (PEDAL < 1) {
+      analogWrite(configPage10.dbw1Pin, 0);
+      analogWrite(configPage10.dbw2Pin, 0);
     } else {
       actuateDBW();
     }
@@ -68,18 +75,20 @@ void dbwCalibrationPedalMax() {
 
 void dbwCalibrationTPS() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
-    // Minimum
-    analogWrite(pinDbw1Input, LOW);
-    analogWrite(pinDbw2Input, LOW);
-    delay(250);
-    configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
-    configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
     // Maximum
-    analogWrite(pinDbw1Input, HIGH);
-    analogWrite(pinDbw2Input, HIGH);
-    delay(250);
+    analogWrite(configPage10.dbw1Pin, 255);
+    analogWrite(configPage10.dbw2Pin, 0);
+    delay(500);
     configPage10.throttle1Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+
+    // Minimum
+    analogWrite(configPage10.dbw1Pin, 0);
+    analogWrite(configPage10.dbw2Pin, 0);
+    delay(500);
+    configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
+    configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+
     writeConfig(10);
   }
 }
@@ -109,5 +118,6 @@ void dbwCalibrationAuto() {
 
     dbwPID.stop();
     writeConfig(10);
+    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
   }
 }

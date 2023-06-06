@@ -1331,26 +1331,26 @@ struct config10 {
 
   byte unused11_149;
   byte dbwEnabled : 1; byte unused11_150 : 7;      // 150
-  byte dbwKP;               // 151
-  byte dbwKI;               // 152
-  byte dbwKD;               // 153
-  byte dbwPedalPin1 : 5; byte unused11_154 : 3;     // 154 #
-  byte dbwPedalPin2 : 5; byte unused11_155 : 3;     // 155 #
-  byte dbwThrotlePin1 : 5; byte unused11_156 : 3;   // 156
-  byte dbwThrotlePin2 : 5; byte unused11_157 : 3;   // 157
-  byte dbw1Pin : 6; byte unused11_158 : 2;          // 158
-  byte dbw2Pin : 6; byte unused11_159 : 2;          // 159
-  byte pedal1Min;           // 160 # pedal Calibration
-  byte pedal1Max;           // 161 # pedal Calibration
-  byte pedal2Min;           // 162 # pedal Calibration
-  byte pedal2Max;           // 163 # pedal Calibration
-  byte throttle1Min;        // 164 # dbw   Calibration
-  byte throttle1Max;        // 165 # dbw   Calibration
-  byte throttle2Min;        // 166 # dbw   Calibration
-  byte throttle2Max;        // 167 # dbw   Calibration
-  byte unused11_168; 
-  byte unused11_169; 
-  byte unused11_170; 
+  uint16_t dbwKP;                                    // 151
+  uint16_t dbwKI;                                    // 153
+  uint16_t dbwKD;                                    // 155 
+  byte dbwPedalPin1 : 5; byte unused11_154 : 3;    // 157 #
+  byte dbwPedalPin2 : 5; byte unused11_155 : 3;    // 158 #
+  byte dbwThrotlePin1 : 5; byte unused11_156 : 3;  // 159
+  byte dbwThrotlePin2 : 5; byte unused11_157 : 3;  // 160
+  byte dbw1Pin : 6; byte unused11_158 : 2;         // 161
+  byte dbw2Pin : 6; byte unused11_159 : 2;         // 162
+  byte pedal1Min;                                  // 163 # pedal Calibration
+  byte pedal1Max;                                  // 164 # pedal Calibration
+  byte pedal2Min;                                  // 165 # pedal Calibration
+  byte pedal2Max;                                  // 166 # pedal Calibration
+  byte throttle1Min;                               // 167 # dbw   Calibration
+  byte throttle1Max;                               // 168 # dbw   Calibration
+  byte throttle2Min;                               // 169 # dbw   Calibration
+  byte throttle2Max;                               // 170 # dbw   Calibration
+  // byte unused11_168; 
+  // byte unused11_169; 
+  // byte unused11_170; 
 
   // byte wmiEnabled : 1;     // 149
   // byte wmiMode : 6;        // 149
@@ -1375,7 +1375,6 @@ struct config10 {
 
   // byte wmiAdvBins[6]; //Bytes 159-164
   // byte wmiAdvAdj[6];  //Additional advance (in degrees) 
-  //Bytes 165-170
   byte vvtCLminDuty; // 171
   byte vvtCLmaxDuty;
   byte vvt2Pin : 6;

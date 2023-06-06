@@ -129,6 +129,13 @@ void initialiseAuxPWM() {
   vvt1_pin_mask = digitalPinToBitMask(pinVVT_1);
   vvt2_pin_port = portOutputRegister(digitalPinToPort(pinVVT_2));
   vvt2_pin_mask = digitalPinToBitMask(pinVVT_2);
+  // ****************** DBW
+  dbw_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2); // DBW TEST
+  dbw1_pin_port = portOutputRegister(digitalPinToPort(configPage10.dbw1Pin));
+  dbw1_pin_mask = digitalPinToBitMask(configPage10.dbw1Pin);
+  dbw2_pin_port = portOutputRegister(digitalPinToPort(configPage10.dbw2Pin));
+  dbw2_pin_mask = digitalPinToBitMask(configPage10.dbw2Pin);
+  // ****************** DBW
   n2o_stage1_pin_port = portOutputRegister(digitalPinToPort(configPage10.n2o_stage1_pin));
   n2o_stage1_pin_mask = digitalPinToBitMask(configPage10.n2o_stage1_pin);
   n2o_stage2_pin_port = portOutputRegister(digitalPinToPort(configPage10.n2o_stage2_pin));
@@ -602,7 +609,7 @@ void vvtControl() {
       }
 
       // Set the PWM state based on the above lookups
-      if ((currentStatus.vvt1Duty == 0)/* && (currentStatus.vvt2Duty == 0)*/) {
+      if ((currentStatus.vvt1Duty == 0) /* && (currentStatus.vvt2Duty == 0)*/) {
         // Make sure solenoid is off (0% duty)
         VVT1_PIN_OFF();
         VVT2_PIN_OFF();
@@ -611,7 +618,7 @@ void vvtControl() {
         vvt2_pwm_state = false;
         vvt2_max_pwm = false;
         DISABLE_VVT_TIMER();
-      } else if ((currentStatus.vvt1Duty >= 200)/* && (currentStatus.vvt2Duty >= 200)*/) {
+      } else if ((currentStatus.vvt1Duty >= 200) /* && (currentStatus.vvt2Duty >= 200)*/) {
         // Make sure solenoid is on (100% duty)
         VVT1_PIN_ON();
         VVT2_PIN_ON();

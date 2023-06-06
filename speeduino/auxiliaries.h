@@ -32,6 +32,10 @@ void fanControl();
 #define N2O_STAGE1_PIN_HIGH()   (digitalWrite(configPage10.n2o_stage1_pin, HIGH))
 #define N2O_STAGE2_PIN_LOW()    (digitalWrite(configPage10.n2o_stage2_pin, LOW))
 #define N2O_STAGE2_PIN_HIGH()   (digitalWrite(configPage10.n2o_stage2_pin, HIGH))
+#define DBW1_PIN_LOW()    (digitalWrite(configPage10.dbw1Pin, LOW))
+#define DBW1_PIN_HIGH()   (digitalWrite(configPage10.dbw2Pin, HIGH))
+#define DBW2_PIN_LOW()    (digitalWrite(configPage10.dbw1Pin, LOW))
+#define DBW2_PIN_HIGH()   (digitalWrite(configPage10.dbw2Pin, HIGH))
 #else
 #define BOOST_PIN_LOW()  *boost_pin_port &= ~(boost_pin_mask)
 #define BOOST_PIN_HIGH() *boost_pin_port |= (boost_pin_mask)
@@ -45,7 +49,11 @@ void fanControl();
 #define N2O_STAGE1_PIN_HIGH() *n2o_stage1_pin_port |= (n2o_stage1_pin_mask)
 #define N2O_STAGE2_PIN_LOW()  *n2o_stage2_pin_port &= ~(n2o_stage2_pin_mask)
 #define N2O_STAGE2_PIN_HIGH() *n2o_stage2_pin_port |= (n2o_stage2_pin_mask)
-
+// DBW
+#define DBW1_PIN_LOW()  *dbw1_pin_port &= ~(dbw1_pin_mask)
+#define DBW1_PIN_HIGH() *dbw1_pin_port |= (dbw1_pin_mask)
+#define DBW2_PIN_LOW()  *dbw2_pin_port &= ~(dbw2_pin_mask)
+#define DBW2_PIN_HIGH() *dbw2_pin_port |= (dbw2_pin_mask)
 #endif
 
 #define READ_N2O_ARM_PIN()    ((*n2o_arming_pin_port & n2o_arming_pin_mask) ? true : false)
@@ -87,6 +95,19 @@ unsigned int boost_pwm_max_count; //Used for variable PWM frequency
 volatile unsigned int boost_pwm_cur_value;
 long boost_pwm_target_value;
 long boost_cl_target_boost;
+
+volatile bool dbw_pwm_state;
+unsigned int dbw_pwm_max_count;
+volatile unsigned int dbw_pwm_cur_value;
+long dbw_pwm_target_value;
+long dbw_cl_target_boost;
+
+volatile bool dbw2_pwm_state;
+unsigned int dbw2_pwm_max_count;
+volatile unsigned int dbw2_pwm_cur_value;
+long dbw2_pwm_target_value;
+long dbw2_cl_target_boost;
+
 byte boostCounter;
 byte vvtCounter;
 #if defined(PWM_FAN_AVAILABLE)//PWM fan not available on Arduino MEGA

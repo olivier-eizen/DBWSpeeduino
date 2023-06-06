@@ -432,9 +432,11 @@ void TS_CommandButtonsHandler(uint16_t buttonCommand) {
       break;
     case TS_CMD_PEDAL_MAX_CALIB:
       dbwCalibrationPedalMax();
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
       break;
     case TS_CMD_THROTTLE_CALIB:
       dbwCalibrationTPS();
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
       break;
 
     // VSS Calibration routines
