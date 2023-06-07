@@ -20,7 +20,7 @@ integerPID vvtPID(&vvt_pid_current_angle, &currentStatus.vvt1Duty, &vvt_pid_targ
 Fan control
 */
 void initialiseFan() {
-  fan_pin_port = portOutputRegister(digitalPinToPort(pinFan));
+  fan_pin_port = portOutputRegister(digitalPinToPort(pinFan)); // On défini le pin et on l'enregistre
   fan_pin_mask = digitalPinToBitMask(pinFan);
   FAN_OFF();  // Initialise program with the fan in the off state
   BIT_CLEAR(currentStatus.status4, BIT_STATUS4_FAN);
@@ -167,7 +167,7 @@ void initialiseAuxPWM() {
 
   if (configPage6.vvtEnabled > 0) {
     currentStatus.vvt1Angle = 0;
-    currentStatus.vvt2Angle = 0;
+    // currentStatus.vvt2Angle = 0;
 
 #if defined(CORE_AVR)
     vvt_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2);  // Converts the frequency in Hz to the number of ticks (at 16uS) it takes to complete 1 cycle. Note that the frequency is divided by 2 coming from TS to allow for up to 512hz

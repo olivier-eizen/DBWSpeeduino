@@ -151,10 +151,10 @@ byte getTSLogEntry(uint16_t byteNum)
     case 106: statusValue = currentStatus.oilPressure; break;
     case 107: statusValue = currentStatus.pedal; break;
     case 108: statusValue = currentStatus.status4; break;
-    case 109: statusValue = lowByte(currentStatus.vvt2Angle); break; //2 bytes for vvt2Angle
-    case 110: statusValue = highByte(currentStatus.vvt2Angle); break;
+    case 109: statusValue = currentStatus.tps1; break; //2 bytes for vvt2Angle
+    case 110: statusValue = currentStatus.tps2; break;
     case 111: statusValue = currentStatus.pedal1; break;
-    case 112: statusValue = (byte)(currentStatus.pedal2); break;
+    case 112: statusValue = currentStatus.pedal2; break;
     case 113: statusValue = currentStatus.outputsStatus; break;
     case 114: statusValue = (byte)(currentStatus.fuelTemp + CALIBRATION_TEMPERATURE_OFFSET); break; //Fuel temperature from flex sensor
     case 115: statusValue = currentStatus.fuelTempCorrection; break; //Fuel temperature Correction (%)
@@ -274,7 +274,7 @@ int16_t getReadableLogEntry(uint16_t logIndex)
     case 75: statusValue = currentStatus.oilPressure; break;
     case 76: statusValue = currentStatus.pedal; break;
     case 77: statusValue = currentStatus.status4; break;
-    case 78: statusValue = currentStatus.vvt2Angle; break; //2 bytes for vvt2Angle
+    case 78: statusValue = currentStatus.tps1; break; //2 bytes for vvt2Angle
     case 79: statusValue = currentStatus.pedal1; break;
     case 80: statusValue = currentStatus.pedal2; break;
     case 81: statusValue = currentStatus.outputsStatus; break;

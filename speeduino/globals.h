@@ -746,9 +746,11 @@ struct statuses {
   byte fanDuty;
   byte pedal;
   volatile byte status4; ///< Status bits (See BIT_STATUS4_* defines on top of this file)
-  int16_t vvt2Angle; //Has to be a long for PID calcs (CL VVT control)
+  // int16_t vvt2Angle; //Has to be a long for PID calcs (CL VVT control)
   // byte vvt2TargetAngle; // 111
   // long vvt2Duty; //Has to be a long for PID calcs (CL VVT control) 112
+  byte tps1;
+  byte tps2;
   byte pedal1;
   byte pedal2;
   byte outputsStatus;
