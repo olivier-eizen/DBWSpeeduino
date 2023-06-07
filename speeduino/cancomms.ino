@@ -327,7 +327,7 @@ void sendcanValues(uint16_t offset, uint16_t packetLength, byte cmd, byte portTy
   fullStatus[103] = currentStatus.fuelPressure;
   fullStatus[104] = currentStatus.oilPressure;
   fullStatus[105] = currentStatus.pedal;
-  fullStatus[106] = currentStatus.status4; // wmiEmptyBit(0), vvt1Error(1), vvt2Error(2), fanStatus(3), UnusedBits(4:7)
+  fullStatus[106] = currentStatus.status4; // dbwRefresh(0), vvt1Error(1), vvt2Error(2), fanStatus(3), UnusedBits(4:7)
   fullStatus[107] = currentStatus.tps1;
   fullStatus[108] = currentStatus.pedal1;
   fullStatus[109] = currentStatus.pedal2;

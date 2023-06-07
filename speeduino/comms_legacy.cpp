@@ -647,7 +647,7 @@ void sendValues(uint16_t offset, uint16_t packetLength, byte cmd, byte portNum)
   serialInProgress = false;
   // Reset any flags that are being used to trigger page refreshes
   BIT_CLEAR(currentStatus.status3, BIT_STATUS3_VSS_REFRESH);
-
+  // BIT_CLEAR(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
 }
 
 void sendValuesLegacy()

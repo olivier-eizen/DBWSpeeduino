@@ -14,7 +14,8 @@ ArduPID dbwPID;
 double PEDAL;
 double PWM;
 double TPS;
-unsigned long loopInterval = 1000 ;
+// unsigned long loopInterval = 469;
+unsigned long loopInterval = 1000;
 
 void initialiseDbw() {
   if (configPage10.dbwEnabled == 1) {
@@ -24,7 +25,10 @@ void initialiseDbw() {
     dbwPID.setOutputLimits(-255, 255);
     dbwPID.setWindUpLimits(-20, 20);
 
-    dbwPID.begin(&TPS, &PWM, &PEDAL, static_cast<double>(configPage10.dbwKP), static_cast<double>(configPage10.dbwKI), static_cast<double>(configPage10.dbwKD));
+    PEDAL = map(currentStatus.pedal, 0, 200, 0, 100);
+    TPS = map(currentStatus.TPS, 0, 200, 0, 100);
+
+    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
   }
 }
 
@@ -40,8 +44,8 @@ void actuateDBW() {
 
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
-    PEDAL = static_cast<double>(currentStatus.pedal);
-    TPS = static_cast<double>(currentStatus.TPS);
+    PEDAL = map(currentStatus.pedal, 0, 200, 0, 100);
+    TPS = map(currentStatus.TPS, 0, 200, 0, 100);
     dbwPID.compute();
     if (PEDAL < 1) {
       analogWrite(configPage10.dbw1Pin, 0);
@@ -50,11 +54,6 @@ void dbw() {
       actuateDBW();
     }
   }
-}
-
-void readTB() {
-  byte a = readTpsDBW();
-  TPS = static_cast<double>(a);
 }
 
 void dbwCalibrationPedalMin() {
@@ -69,7 +68,6 @@ void dbwCalibrationPedalMax() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
     configPage10.pedal1Max = fastMap1023toX(analogRead(configPage10.dbwPedalPin1), 255);
     configPage10.pedal2Max = fastMap1023toX(analogRead(configPage10.dbwPedalPin2), 255);
-    writeConfig(10);
   }
 }
 
@@ -89,7 +87,6 @@ void dbwCalibrationTPS() {
     configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
 
-    writeConfig(10);
   }
 }
 
@@ -174,9 +171,6 @@ byte readTpsDBW() {
     }
   }
 
-  // currentStatus
-  // currentStatus
-
   currentStatus.tps1 = map(tempTPS1, configPage10.throttle1Min, configPage10.throttle1Max, 0, 200);
   currentStatus.tps2 = map(tempTPS2, configPage10.throttle2Min, configPage10.throttle2Max, 0, 200);
 
@@ -185,7 +179,7 @@ byte readTpsDBW() {
 
 void dbwCalibrationAuto() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
-    dbwPID.begin(&TPS, &PWM, &PEDAL, static_cast<double>(configPage10.dbwKP), static_cast<double>(configPage10.dbwKI), static_cast<double>(configPage10.dbwKD));
+    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
     PIDAutotuner tuner = PIDAutotuner();
     tuner.setTargetInputValue(90);
     tuner.setLoopInterval(loopInterval);
@@ -196,18 +190,17 @@ void dbwCalibrationAuto() {
     unsigned long microseconds;
     while (!tuner.isFinished()) {
       microseconds = micros();
-      readTB();
+      TPS = map(currentStatus.TPS, 0, 200, 0, 100);
       PWM = tuner.tunePID(TPS);
       actuateDBW();
       while (micros() - microseconds < loopInterval) delayMicroseconds(1);
     }
 
-    configPage10.dbwKP = static_cast<double>(tuner.getKp());
-    configPage10.dbwKI = static_cast<double>(tuner.getKi());
-    configPage10.dbwKD = static_cast<double>(tuner.getKd());
+    configPage10.dbwKP = tuner.getKp();
+    configPage10.dbwKI = tuner.getKi();
+    configPage10.dbwKD = tuner.getKd();
 
     dbwPID.stop();
-    writeConfig(10);
-    dbwPID.begin(&TPS, &PWM, &PEDAL, static_cast<double>(configPage10.dbwKP), static_cast<double>(configPage10.dbwKI), static_cast<double>(configPage10.dbwKD));
+    // dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
   }
 }

@@ -246,7 +246,6 @@ void processSerialCommand()
     case 'b': // New EEPROM burn command to only burn a single page at a time 
       if( (micros() > deferEEPROMWritesUntil)) { writeConfig(serialPayload[2]); } //Read the table number and perform burn. Note that byte 1 in the array is unused
       else { BIT_SET(currentStatus.status4, BIT_STATUS4_BURNPENDING); }
-      
       sendSerialReturnCode(SERIAL_RC_BURN_OK);
       break;
 
@@ -912,7 +911,7 @@ void generateLiveValues(uint16_t offset, uint16_t packetLength)
   }
   // Reset any flags that are being used to trigger page refreshes
   BIT_CLEAR(currentStatus.status3, BIT_STATUS3_VSS_REFRESH);
-
+  // BIT_CLEAR(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
 }
 
 namespace 

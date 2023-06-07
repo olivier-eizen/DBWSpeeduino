@@ -6,13 +6,13 @@
 
 #include "SD_logger.h"
 #include "TS_CommandButtonHandler.h"
+#include "dbw.h"
 #include "globals.h"
+#include "maths.h"
 #include "scheduledIO.h"
 #include "sensors.h"
 #include "storage.h"
-#include "maths.h"
 #include "utilities.h"
-#include "dbw.h"
 #ifdef USE_MC33810
 #include "acc_mc33810.h"
 #endif
@@ -424,19 +424,23 @@ void TS_CommandButtonsHandler(uint16_t buttonCommand) {
     // DBW
     case TS_CMD_DBW_SELF_CALIB:
       dbwCalibrationAuto();
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
+      writeConfig(10);
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
       break;
     case TS_CMD_PEDAL_MIN_CALIB:
       dbwCalibrationPedalMin();
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
+      writeConfig(10);
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
       break;
     case TS_CMD_PEDAL_MAX_CALIB:
       dbwCalibrationPedalMax();
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
+      writeConfig(10);
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
       break;
     case TS_CMD_THROTTLE_CALIB:
       dbwCalibrationTPS();
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW);  // trouver un moyen de reset
+      writeConfig(10);
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
       break;
 
     // VSS Calibration routines

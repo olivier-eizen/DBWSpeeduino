@@ -221,13 +221,12 @@
 #define BIT_STATUS3_NSQUIRTS2     6
 #define BIT_STATUS3_NSQUIRTS3     7
 
-// #define BIT_STATUS4_WMI_EMPTY     0 //Indicates whether the WMI tank is empty
-#define BIT_STATUS4_DBW           0    //Indicates whether the WMI tank is empty
-#define BIT_STATUS4_VVT1_ERROR    1 //VVT1 cam angle within limits or not
-#define BIT_STATUS4_VVT2_ERROR    2 //VVT2 cam angle within limits or not
-#define BIT_STATUS4_FAN           3 //Fan Status
+#define BIT_STATUS4_UNUSED        0   
+#define BIT_STATUS4_VVT1_ERROR    1   //VVT1 cam angle within limits or not
+#define BIT_STATUS4_VVT2_ERROR    2   //VVT2 cam angle within limits or not
+#define BIT_STATUS4_FAN           3   //Fan Status
 #define BIT_STATUS4_BURNPENDING   4
-#define BIT_STATUS4_UNUSED6       5
+#define BIT_STATUS4_DBW_REFRESH   5   // Refresh DBW page
 #define BIT_STATUS4_UNUSED7       6
 #define BIT_STATUS4_UNUSED8       7
 
@@ -1332,7 +1331,7 @@ struct config10 {
   byte oilPressureProtMins[4];
 
   byte unused11_149;
-  byte dbwEnabled : 1; byte unused11_150 : 7;      // 150
+  byte dbwEnabled : 1; byte update : 1; byte unused11_150 : 6;      // 150
   uint16_t dbwKP;                                    // 151
   uint16_t dbwKI;                                    // 153
   uint16_t dbwKD;                                    // 155 
