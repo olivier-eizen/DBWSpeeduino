@@ -233,8 +233,8 @@ void loop()
       //This should only be run if the high speed logger are off because it will change the trigger interrupts back to defaults rather than the logger versions
       if( (currentStatus.toothLogEnabled == false) && (currentStatus.compositeLogEnabled == false) ) { initialiseTriggers(); }
 
-      VVT1_PIN_LOW();
-      VVT2_PIN_LOW();
+      // VVT1_PIN_LOW();
+      // VVT2_PIN_LOW();
       DISABLE_VVT_TIMER();
       boostDisable();
       if(configPage4.ignBypassEnabled > 0) { digitalWrite(pinIgnBypass, LOW); } //Reset the ignition bypass ready for next crank attempt
@@ -314,7 +314,7 @@ void loop()
       //Most boost tends to run at about 30Hz, so placing it here ensures a new target time is fetched frequently enough
       boostControl();
       //VVT may eventually need to be synced with the cam readings (ie run once per cam rev) but for now run at 30Hz
-      vvtControl();
+      // vvtControl();
       //Water methanol injection
       // wmiControl(); //TODO:DBW
       #if defined(NATIVE_CAN_AVAILABLE)

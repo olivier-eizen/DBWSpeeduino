@@ -9,5 +9,6 @@ void dbwCalibrationAuto();
 void dbwCalibrationPedalMin();
 void dbwCalibrationPedalMax();
 void dbwCalibrationTPS();
-void initialiseDbw();
+void readPedal();
 void readTpsDBW(bool useFilter);
+void initialiseDbw();

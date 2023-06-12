@@ -8,11 +8,11 @@ void boostControl();
 void boostDisable();
 void boostByGear();
 void idleControl();
-void vvtControl();
 void initialiseFan();
 void initialiseDbw();
 void nitrousControl();
 void fanControl();
+// void vvtControl();
 // void wmiControl();
 
 #define SIMPLE_BOOST_P  1
@@ -39,10 +39,10 @@ void fanControl();
 #else
 #define BOOST_PIN_LOW()  *boost_pin_port &= ~(boost_pin_mask)
 #define BOOST_PIN_HIGH() *boost_pin_port |= (boost_pin_mask)
-#define VVT1_PIN_LOW()    *vvt1_pin_port &= ~(vvt1_pin_mask)
-#define VVT1_PIN_HIGH()   *vvt1_pin_port |= (vvt1_pin_mask)
-#define VVT2_PIN_LOW()    *vvt2_pin_port &= ~(vvt2_pin_mask)
-#define VVT2_PIN_HIGH()   *vvt2_pin_port |= (vvt2_pin_mask)
+// #define VVT1_PIN_LOW()    *vvt1_pin_port &= ~(vvt1_pin_mask)
+// #define VVT1_PIN_HIGH()   *vvt1_pin_port |= (vvt1_pin_mask)
+// #define VVT2_PIN_LOW()    *vvt2_pin_port &= ~(vvt2_pin_mask)
+// #define VVT2_PIN_HIGH()   *vvt2_pin_port |= (vvt2_pin_mask)
 #define FAN_PIN_LOW()    *fan_pin_port &= ~(fan_pin_mask)
 #define FAN_PIN_HIGH()   *fan_pin_port |= (fan_pin_mask)
 #define N2O_STAGE1_PIN_LOW()  *n2o_stage1_pin_port &= ~(n2o_stage1_pin_mask)
@@ -57,10 +57,10 @@ void fanControl();
 #endif
 
 #define READ_N2O_ARM_PIN()    ((*n2o_arming_pin_port & n2o_arming_pin_mask) ? true : false)
-#define VVT1_PIN_ON()     VVT1_PIN_HIGH();
-#define VVT1_PIN_OFF()    VVT1_PIN_LOW();
-#define VVT2_PIN_ON()     VVT2_PIN_HIGH();
-#define VVT2_PIN_OFF()    VVT2_PIN_LOW();
+// #define VVT1_PIN_ON()     VVT1_PIN_HIGH();
+// #define VVT1_PIN_OFF()    VVT1_PIN_LOW();
+// #define VVT2_PIN_ON()     VVT2_PIN_HIGH();
+// #define VVT2_PIN_OFF()    VVT2_PIN_LOW();
 
 #define VVT_TIME_DELAY_MULTIPLIER  50
 
