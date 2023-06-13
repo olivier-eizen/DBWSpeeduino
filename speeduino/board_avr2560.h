@@ -133,33 +133,24 @@
 */
   #define ENABLE_BOOST_TIMER()  TIMSK1 |= (1 << OCIE1A)
   #define DISABLE_BOOST_TIMER() TIMSK1 &= ~(1 << OCIE1A)
-  #define ENABLE_VVT_TIMER()    TIMSK1 |= (1 << OCIE1B)
-  #define DISABLE_VVT_TIMER()   TIMSK1 &= ~(1 << OCIE1B)
-
   #define BOOST_TIMER_COMPARE   OCR1A
   #define BOOST_TIMER_COUNTER   TCNT1
-  #define VVT_TIMER_COMPARE     OCR1B
-  #define VVT_TIMER_COUNTER     TCNT1
-
 /*
 ***********************************************************************************************************
-* Idle
-*/
-  #define IDLE_COUNTER TCNT1
-  #define IDLE_COMPARE OCR1C
-
-  #define IDLE_TIMER_ENABLE() TIMSK1 |= (1 << OCIE1C)
-  #define IDLE_TIMER_DISABLE() TIMSK1 &= ~(1 << OCIE1C)
-
-/*
-***********************************************************************************************************
-* DBW
+* Drive by wire
 */
   #define ENABLE_DBW_TIMER()    TIMSK1 |= (1 << OCIE1B)
   #define DISABLE_DBW_TIMER()   TIMSK1 &= ~(1 << OCIE1B)
   #define DBW_TIMER_COMPARE     OCR1B
   #define DBW_TIMER_COUNTER     TCNT1
-  
+/*
+***********************************************************************************************************
+* Idle
+*/
+  #define IDLE_TIMER_ENABLE()   TIMSK1 |= (1 << OCIE1C)
+  #define IDLE_TIMER_DISABLE()  TIMSK1 &= ~(1 << OCIE1C)
+  #define IDLE_COMPARE          OCR1C
+  #define IDLE_COUNTER          TCNT1
 /*
 ***********************************************************************************************************
 * CAN / Second serial

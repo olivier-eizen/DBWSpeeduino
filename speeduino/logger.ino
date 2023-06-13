@@ -135,10 +135,10 @@ byte getTSLogEntry(uint16_t byteNum)
     case 90: statusValue = highByte(currentStatus.dwell); break;
     case 91: statusValue = currentStatus.CLIdleTarget; break;
     case 92: statusValue = currentStatus.mapDOT; break;
-    case 93: statusValue = lowByte(currentStatus.vvt1Angle); break; //2 bytes for vvt1Angle
-    case 94: statusValue = highByte(currentStatus.vvt1Angle); break;
-    case 95: statusValue = currentStatus.vvt1TargetAngle; break;
-    case 96: statusValue = (byte)(currentStatus.vvt1Duty); break;
+    case 93: statusValue = lowByte(currentStatus.noused); break; //2 bytes for vvt1Angle
+    case 94: statusValue = highByte(currentStatus.noused); break;
+    case 95: statusValue = currentStatus.noused2; break;
+    case 96: statusValue = (byte)(currentStatus.dbwDuty); break;
     case 97: statusValue = lowByte(currentStatus.flexBoostCorrection); break;
     case 98: statusValue = highByte(currentStatus.flexBoostCorrection); break;
     case 99: statusValue = currentStatus.baroCorrection; break;
@@ -261,9 +261,9 @@ int16_t getReadableLogEntry(uint16_t logIndex)
     case 62: statusValue = currentStatus.dwell; break;
     case 63: statusValue = currentStatus.CLIdleTarget; break;
     case 64: statusValue = currentStatus.mapDOT; break;
-    case 65: statusValue = currentStatus.vvt1Angle; break;
-    case 66: statusValue = currentStatus.vvt1TargetAngle; break;
-    case 67: statusValue = currentStatus.vvt1Duty; break;
+    case 65: statusValue = currentStatus.noused; break;
+    case 66: statusValue = currentStatus.noused2; break;
+    case 67: statusValue = currentStatus.dbwDuty; break;
     case 68: statusValue = currentStatus.flexBoostCorrection; break;
     case 69: statusValue = currentStatus.baroCorrection; break;
     case 70: statusValue = currentStatus.VE; break; //Current VE (%). Can be equal to VE1 or VE2 or a calculated value from both of them

@@ -13,14 +13,14 @@ A full copy of the license may be found in the projects root directory
 // Old PID method. Retained in case the new one has issues
 // integerPID boostPID(&MAPx100, &boost_pwm_target_value, &boostTargetx100, configPage6.boostKP, configPage6.boostKI, configPage6.boostKD, DIRECT);
 integerPID_ideal boostPID(&currentStatus.MAP, &currentStatus.boostDuty, &currentStatus.boostTarget, &configPage10.boostSens, &configPage10.boostIntv, configPage6.boostKP, configPage6.boostKI, configPage6.boostKD, DIRECT);  // This is the PID object if that algorithm is used. Needs to be global as it maintains state outside of each function call
-integerPID vvtPID(&vvt_pid_current_angle, &currentStatus.vvt1Duty, &vvt_pid_target_angle, configPage10.vvtCLKP, configPage10.vvtCLKI, configPage10.vvtCLKD, configPage6.vvtPWMdir);                                            // This is the PID object if that algorithm is used. Needs to be global as it maintains state outside of each function call
+// integerPID vvtPID(&vvt_pid_current_angle, &currentStatus.vvt1Duty, &vvt_pid_target_angle, configPage10.vvtCLKP, configPage10.vvtCLKI, configPage10.vvtCLKD, configPage6.vvtPWMdir);                                            // This is the PID object if that algorithm is used. Needs to be global as it maintains state outside of each function call
 // integerPID vvt2PID(&vvt2_pid_current_angle, &currentStatus.vvt2Duty, &vvt2_pid_target_angle, configPage10.vvtCLKP, configPage10.vvtCLKI, configPage10.vvtCLKD, configPage4.vvt2PWMdir);                                        // This is the PID object if that algorithm is used. Needs to be global as it maintains state outside of each function call
 
 /*
 Fan control
 */
 void initialiseFan() {
-  fan_pin_port = portOutputRegister(digitalPinToPort(pinFan)); // On défini le pin et on l'enregistre
+  fan_pin_port = portOutputRegister(digitalPinToPort(pinFan));  // On défini le pin et on l'enregistre
   fan_pin_mask = digitalPinToBitMask(pinFan);
   FAN_OFF();  // Initialise program with the fan in the off state
   BIT_CLEAR(currentStatus.status4, BIT_STATUS4_FAN);
@@ -130,7 +130,6 @@ void initialiseAuxPWM() {
   // vvt2_pin_port = portOutputRegister(digitalPinToPort(pinVVT_2));
   // vvt2_pin_mask = digitalPinToBitMask(pinVVT_2);
   // ****************** DBW
-  dbw_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2); // DBW TEST
   dbw1_pin_port = portOutputRegister(digitalPinToPort(configPage10.dbw1Pin));
   dbw1_pin_mask = digitalPinToBitMask(configPage10.dbw1Pin);
   dbw2_pin_port = portOutputRegister(digitalPinToPort(configPage10.dbw2Pin));
@@ -164,6 +163,10 @@ void initialiseAuxPWM() {
   } else {
     boostPID.SetTunings(configPage6.boostKP, configPage6.boostKI, configPage6.boostKD);
   }
+
+  // if(configPage10.dbwEnabled == 1) {
+  //   ENABLE_DBW_TIMER();
+  // }
 
   // if (configPage6.vvtEnabled > 0) {
   //   currentStatus.vvt1Angle = 0;
@@ -783,7 +786,7 @@ void boostDisable() {
 #if defined(CORE_AVR)
 ISR(TIMER1_COMPA_vect)
 #else
-void boostInterrupt()                                               // Most ARM chips can simply call a function
+void boostInterrupt()  // Most ARM chips can simply call a function
 #endif
 {
   if (boost_pwm_state == true) {
@@ -797,99 +800,6 @@ void boostInterrupt()                                               // Most ARM 
     boost_pwm_state = true;
   }
 }
-
-// The interrupt to control the VVT PWM
-// #if defined(CORE_AVR)
-// ISR(TIMER1_COMPB_vect)
-// #else
-// void vvtInterrupt()                                                 // Most ARM chips can simply call a function
-// #endif
-// {
-//   if (((vvt1_pwm_state == false) || (vvt1_max_pwm == true)) && ((vvt2_pwm_state == false) || (vvt2_max_pwm == true))) {
-//     if ((vvt1_pwm_value > 0) && (vvt1_max_pwm == false))  // Don't toggle if at 0%
-//     {
-//       VVT1_PIN_ON();
-//       vvt1_pwm_state = true;
-//     }
-//     if ((vvt2_pwm_value > 0) && (vvt2_max_pwm == false))  // Don't toggle if at 0%
-//     {
-//       VVT2_PIN_ON();
-//       vvt2_pwm_state = true;
-//     }
-
-//     if ((vvt1_pwm_state == true) && ((vvt1_pwm_value <= vvt2_pwm_value) || (vvt2_pwm_state == false))) {
-//       SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + vvt1_pwm_value);
-//       vvt1_pwm_cur_value = vvt1_pwm_value;
-//       vvt2_pwm_cur_value = vvt2_pwm_value;
-//       if (vvt1_pwm_value == vvt2_pwm_value) {
-//         nextVVT = 2;
-//       }  // Next event is for both PWM
-//       else {
-//         nextVVT = 0;
-//       }  // Next event is for PWM0
-//     } else if (vvt2_pwm_state == true) {
-//       SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + vvt2_pwm_value);
-//       vvt1_pwm_cur_value = vvt1_pwm_value;
-//       vvt2_pwm_cur_value = vvt2_pwm_value;
-//       nextVVT = 1;  // Next event is for PWM1
-//     } else {
-//       SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + vvt_pwm_max_count);
-//     }  // Shouldn't ever get here
-//   } else {
-//     if (nextVVT == 0) {
-//       if (vvt1_pwm_value < (long)vvt_pwm_max_count)  // Don't toggle if at 100%
-//       {
-//         VVT1_PIN_OFF();
-//         vvt1_pwm_state = false;
-//         vvt1_max_pwm = false;
-//       } else {
-//         vvt1_max_pwm = true;
-//       }
-//       nextVVT = 1;  // Next event is for PWM1
-//       if (vvt2_pwm_state == true) {
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt2_pwm_cur_value - vvt1_pwm_cur_value));
-//       } else {
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt_pwm_max_count - vvt1_pwm_cur_value));
-//         nextVVT = 2;  // Next event is for both PWM
-//       }
-//     } else if (nextVVT == 1) {
-//       if (vvt2_pwm_value < (long)vvt_pwm_max_count)  // Don't toggle if at 100%
-//       {
-//         VVT2_PIN_OFF();
-//         vvt2_pwm_state = false;
-//         vvt2_max_pwm = false;
-//       } else {
-//         vvt2_max_pwm = true;
-//       }
-//       nextVVT = 0;  // Next event is for PWM0
-//       if (vvt1_pwm_state == true) {
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt1_pwm_cur_value - vvt2_pwm_cur_value));
-//       } else {
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt_pwm_max_count - vvt2_pwm_cur_value));
-//         nextVVT = 2;  // Next event is for both PWM
-//       }
-//     } else {
-//       if (vvt1_pwm_value < (long)vvt_pwm_max_count)  // Don't toggle if at 100%
-//       {
-//         VVT1_PIN_OFF();
-//         vvt1_pwm_state = false;
-//         vvt1_max_pwm = false;
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt_pwm_max_count - vvt1_pwm_cur_value));
-//       } else {
-//         vvt1_max_pwm = true;
-//       }
-//       if (vvt2_pwm_value < (long)vvt_pwm_max_count)  // Don't toggle if at 100%
-//       {
-//         VVT2_PIN_OFF();
-//         vvt2_pwm_state = false;
-//         vvt2_max_pwm = false;
-//         SET_COMPARE(VVT_TIMER_COMPARE, VVT_TIMER_COUNTER + (vvt_pwm_max_count - vvt2_pwm_cur_value));
-//       } else {
-//         vvt2_max_pwm = true;
-//       }
-//     }
-//   }
-// }
 
 #if defined(PWM_FAN_AVAILABLE)
 // The interrupt to control the FAN PWM. Mega2560 doesn't have enough timers, so this is only for the ARM chip ones

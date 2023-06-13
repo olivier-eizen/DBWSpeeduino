@@ -137,7 +137,7 @@ long vvt_pid_current_angle;
 long vvt2_pid_current_angle;
 
 void boostInterrupt();
-void vvtInterrupt();
+// void vvtInterrupt();
 
 
 #endif

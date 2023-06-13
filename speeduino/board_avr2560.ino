@@ -31,12 +31,13 @@ void initBoard()
     //PWM used by the Boost and VVT outputs. C Channel is used by ign5
     TCCR1B = TIMER_PRESCALER_OFF;   //Disable Timer1 while we set it up
     TCNT1  = 0;                     //Reset Timer Count
-    TCCR1A = TIMER_MODE_FASTPWM;     //Timer1 Control Reg A: Wave Gen Mode normal (Simply counts up from 0 to 65535 (16-bit int)
+    TCCR1A = TIMER_MODE_NORMAL;     //Timer1 Control Reg A: Wave Gen Mode normal (Simply counts up from 0 to 65535 (16-bit int)
     TCCR1B = TIMER_PRESCALER_256;   //Timer1 Control Reg B: Timer Prescaler set to 256. 1 tick = 16uS.
     TIFR1 = (1 << OCF1A) | (1<<OCF1B) | (1<<OCF1C) | (1<<TOV1) | (1<<ICF1); //Clear the compare flags, overflow flag and external input flag bits
 
     boost_pwm_max_count = 1000000L / (16 * configPage6.boostFreq * 2); //Converts the frequency in Hz to the number of ticks (at 16uS) it takes to complete 1 cycle. The x2 is there because the frequency is stored at half value (in a byte) to allow frequencies up to 511Hz
-    vvt_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2); //Converts the frequency in Hz to the number of ticks (at 16uS) it takes to complete 1 cycle
+    // vvt_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2); //Converts the frequency in Hz to the number of ticks (at 16uS) it takes to complete 1 cycle
+    dbw_pwm_max_count = 1000000L / (16 * configPage6.vvtFreq * 2); //Converts the frequency in Hz to the number of ticks (at 16uS) it takes to complete 1 cycle
     // put idle_pwm_max_count calculation here?
 
     /*
@@ -71,7 +72,7 @@ void initBoard()
     //Ignition Schedules, which uses timer 5. This is also used by the fast version of micros(). If the speed of this timer is changed from 4uS ticks, that MUST be changed as well. See globals.h and timers.ino
     TCCR5B = TIMER_PRESCALER_OFF;   //Disable Timer5 while we set it up
     TCNT5  = 0;                     //Reset Timer Count
-    TCCR5A = TIMER_MODE_PWM;     //Timer5 Control Reg A: Wave Gen Mode normal
+    TCCR5A = TIMER_MODE_NORMAL;     //Timer5 Control Reg A: Wave Gen Mode normal
     TCCR5B = TIMER_PRESCALER_64;    //Timer5 Control Reg B: Timer Prescaler set to 64.
     TIFR5 = (1 << OCF5A) | (1<<OCF5B) | (1<<OCF5C) | (1<<TOV5) | (1<<ICF5); //Clear the compare flags, overflow flag and external input flag bits
     

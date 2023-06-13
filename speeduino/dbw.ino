@@ -29,34 +29,45 @@ void initialiseDbw() {
   }
 }
 
-void actuateDBW() {
-  if (PWM > 0) {
-    analogWrite(configPage10.dbw1Pin, abs(PWM));
-    analogWrite(configPage10.dbw2Pin, 0);
+ISR(TIMER1_COMPB_vect) {
+  if (PEDAL > 2) {
+    if (dbw_pwm_state) {
+      DBW1_PIN_LOW();  // Switch pin to low
+      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
+      dbw_pwm_state = false;
+    } else {
+      DBW1_PIN_HIGH();  // Switch pin high
+      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_target_value);
+      dbw_pwm_cur_value = dbw_pwm_target_value;
+      dbw_pwm_state = true;
+    }
   } else {
-    analogWrite(configPage10.dbw1Pin, 0);
-    analogWrite(configPage10.dbw2Pin, abs(PWM));
+    DBW1_PIN_LOW();
+    DBW2_PIN_LOW();
   }
+}
+
+void actuateDBW() {
+  // if (PWM > 0) {
+  //   DBW1_PIN_HIGH();  // Switch pin high
+  //   // analogWrite(configPage10.dbw1Pin, abs(PWM));
+  //   // analogWrite(configPage10.dbw2Pin, 0);
+  // } else {
+  //   DBW1_PIN_LOW();  // Switch pin to low
+  //   // analogWrite(configPage10.dbw1Pin, 0);
+  //   // analogWrite(configPage10.dbw2Pin, abs(PWM));
+  // }
 }
 
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
+    ENABLE_DBW_TIMER();
     PEDAL = map(currentStatus.pedal, 0, 200, 0, 100);
     TPS = map(currentStatus.TPS, 0, 200, 0, 100);
-
-    if (dbwCounter == 31) {
-      dbwPID.stop();
-      dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
-      dbwCounter = 0;
-    }
     dbwPID.compute();
-    if (PEDAL < 1) {
-      analogWrite(configPage10.dbw1Pin, 0);
-      analogWrite(configPage10.dbw2Pin, 0);
-    } else {
-      actuateDBW();
-    }
-    dbwCounter++;
+    currentStatus.dbwDuty = map(PWM, 0, 255, 0, 200);
+    dbw_pwm_target_value = percentage(PWM, dbw_pwm_max_count);
+    // currentStatus.dbwDuty = dbw_pwm_target_value;
   }
 }
 
@@ -92,7 +103,6 @@ void dbwCalibrationTPS() {
   }
 }
 
-// DBW
 void readPedal() {
   if (configPage10.dbwEnabled == true) {
     byte tempPEDAL1 = fastMap1023toX(analogRead(configPage10.dbwPedalPin1), 255);

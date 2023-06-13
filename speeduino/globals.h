@@ -731,9 +731,12 @@ struct statuses {
   bool knockActive;
   bool toothLogEnabled;
   bool compositeLogEnabled;
-  int16_t vvt1Angle; //Has to be a long for PID calcs (CL VVT control)
-  byte vvt1TargetAngle;
-  long vvt1Duty; //Has to be a long for PID calcs (CL VVT control)
+  // int16_t vvt1Angle; //Has to be a long for PID calcs (CL VVT control)
+  // byte vvt1TargetAngle;
+  // long vvt1Duty; //Has to be a long for PID calcs (CL VVT control)
+  int16_t noused; //Has to be a long for PID calcs (CL VVT control)
+  byte noused2;
+  long dbwDuty;
   uint16_t injAngle;
   byte ASEValue;
   uint16_t vss;      /**< Current speed reading. Natively stored in kph and converted to mph in TS if required */

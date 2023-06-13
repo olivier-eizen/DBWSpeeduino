@@ -314,9 +314,9 @@ void sendcanValues(uint16_t offset, uint16_t packetLength, byte cmd, byte portTy
   fullStatus[90] = currentStatus.idleLoad;
   fullStatus[91] = currentStatus.CLIdleTarget; //closed loop idle target
   fullStatus[92] = currentStatus.mapDOT; //rate of change of the map 
-  fullStatus[93] = (int8_t)currentStatus.vvt1Angle;
-  fullStatus[94] = currentStatus.vvt1TargetAngle;
-  fullStatus[95] = currentStatus.vvt1Duty;
+  fullStatus[93] = (int8_t)currentStatus.noused;
+  fullStatus[94] = currentStatus.noused2;
+  fullStatus[95] = currentStatus.dbwDuty;
   fullStatus[96] = lowByte(currentStatus.flexBoostCorrection);
   fullStatus[97] = highByte(currentStatus.flexBoostCorrection);
   fullStatus[98] = currentStatus.baroCorrection;
