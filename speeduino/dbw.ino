@@ -13,6 +13,7 @@
 
 byte dbwCounter = 0;
 ArduPID dbwPID;
+bool dbw_calibration_tps = false;
 double PEDAL, PWM, TPS;
 double KP = 0, KI = 0, KD = 0;
 double loopInterval = 2000;
@@ -21,8 +22,7 @@ void initialiseDbw() {
   if (configPage10.dbwEnabled == 1) {
     pinMode(configPage10.dbw1Pin, OUTPUT);
     pinMode(configPage10.dbw2Pin, OUTPUT);
-
-    dbwPID.setOutputLimits(-255, 255);
+    dbwPID.setOutputLimits(-(dbw_pwm_max_count - 1), +(dbw_pwm_max_count - 1));
     dbwPID.setWindUpLimits(-20, 20);
 
     dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
@@ -30,20 +30,43 @@ void initialiseDbw() {
 }
 
 ISR(TIMER1_COMPB_vect) {
-  if (PEDAL > 2) {
-    if (dbw_pwm_state) {
-      DBW1_PIN_LOW();  // Switch pin to low
+  if (!dbw_calibration_tps) {
+    unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_max_count - 1);
+    
+    if (PEDAL < (1 * 2)) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
       dbw_pwm_state = false;
+      DBW1_PIN_LOW();
+      DBW2_PIN_LOW();
     } else {
-      DBW1_PIN_HIGH();  // Switch pin high
-      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_target_value);
-      dbw_pwm_cur_value = dbw_pwm_target_value;
-      dbw_pwm_state = true;
+      posi(_pwm);
     }
-  } else {
+  }
+}
+
+void posi(unsigned long pwm) {
+  if (dbw_pwm_state) {
     DBW1_PIN_LOW();
+    SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
+    dbw_pwm_state = false;
+  } else {
+    DBW1_PIN_HIGH();
+    SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
+    dbw_pwm_cur_value = pwm;
+    dbw_pwm_state = true;
+  }
+}
+
+void nega(unsigned long pwm) {
+  if (dbw_pwm_state) {
     DBW2_PIN_LOW();
+    SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
+    dbw_pwm_state = false;
+  } else {
+    DBW2_PIN_HIGH();
+    SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
+    dbw_pwm_cur_value = pwm;
+    dbw_pwm_state = true;
   }
 }
 
@@ -62,12 +85,13 @@ void actuateDBW() {
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
-    PEDAL = map(currentStatus.pedal, 0, 200, 0, 100);
-    TPS = map(currentStatus.TPS, 0, 200, 0, 100);
+    PEDAL = currentStatus.pedal;
+    TPS = currentStatus.TPS;
     dbwPID.compute();
-    currentStatus.dbwDuty = map(PWM, 0, 255, 0, 200);
-    dbw_pwm_target_value = percentage(PWM, dbw_pwm_max_count);
-    // currentStatus.dbwDuty = dbw_pwm_target_value;
+
+    currentStatus.dbwDuty = map(PWM, -(dbw_pwm_max_count - 1), +(dbw_pwm_max_count - 1), 0, 200);
+    // dbw_pwm_target_value = PWM;
+    dbw_pwm_target_value = PWM;
   }
 }
 
@@ -87,19 +111,19 @@ void dbwCalibrationPedalMax() {
 
 void dbwCalibrationTPS() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
+    dbw_calibration_tps = true;
     // Maximum
-    analogWrite(configPage10.dbw1Pin, 255);
-    analogWrite(configPage10.dbw2Pin, 0);
+    DBW1_PIN_HIGH();
     delay(500);
     configPage10.throttle1Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Max = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
 
     // Minimum
-    analogWrite(configPage10.dbw1Pin, 0);
-    analogWrite(configPage10.dbw2Pin, 0);
+    DBW1_PIN_LOW();
     delay(500);
     configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
+    dbw_calibration_tps = false;
   }
 }
 
@@ -197,6 +221,7 @@ void readTpsDBW(bool useFilter) {
 
 void dbwCalibrationAuto() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
+    dbw_calibration_tps = true;
     dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
     PIDAutotuner tuner = PIDAutotuner();
     tuner.setTargetInputValue(90);
@@ -221,5 +246,6 @@ void dbwCalibrationAuto() {
     dbwPID.stop();
 
     dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+    dbw_calibration_tps = false;
   }
 }
