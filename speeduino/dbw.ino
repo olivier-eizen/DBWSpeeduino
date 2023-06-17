@@ -32,7 +32,7 @@ void initialiseDbw() {
 ISR(TIMER1_COMPB_vect) {
   if (!dbw_calibration_tps) {
     unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_max_count - 1);
-    
+
     if (PEDAL < (1 * 2)) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
       dbw_pwm_state = false;
@@ -85,13 +85,18 @@ void actuateDBW() {
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
+    if(dbwCounter > 31) {
+      dbwCounter = 0;
+      dbwPID.stop();
+      dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+    }
     PEDAL = currentStatus.pedal;
     TPS = currentStatus.TPS;
     dbwPID.compute();
 
     currentStatus.dbwDuty = map(PWM, -(dbw_pwm_max_count - 1), +(dbw_pwm_max_count - 1), 0, 200);
-    // dbw_pwm_target_value = PWM;
     dbw_pwm_target_value = PWM;
+    dbwCounter++;
   }
 }
 
