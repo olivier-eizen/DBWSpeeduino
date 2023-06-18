@@ -1076,7 +1076,7 @@ struct config6 {
   byte airDenBins[9];
   byte airDenRates[9];
   byte boostFreq;   /// Frequency of the boost PWM valve
-  byte dbwFreq;     /// Frequency of the vvt PWM valve
+  byte vvtFreq;     /// Frequency of the vvt PWM valve
   byte idleFreq;
   // Launch stuff, see beginning of speeduino.ino main loop
   byte launchPin : 6; ///< Launch (control ?) pin
@@ -1307,21 +1307,13 @@ struct config10 {
   byte fuel2InputPolarity : 1;
   byte fuel2InputPullup : 1;
 
-  // byte vvtCLholdDuty; //Byte 126
-  // byte vvtCLKP; //Byte 127
-  // byte vvtCLKI; //Byte 128
-  // byte vvtCLKD; //Byte 129
-  // int16_t vvtCL0DutyAng; //Bytes 130-131
-  // uint8_t vvtCLMinAng; //Byte 132
-  // uint8_t vvtCLMaxAng; //Byte 133
-  
-  byte dbwIdleTriggerRPM; //Byte 126
-  byte dbwIdleTriggerMAP; //Byte 127
-  byte notused128; //Byte 128
-  byte notused129; //Byte 129
-  int16_t notused130; //Bytes 130-131
-  uint8_t notused132; //Byte 132
-  uint8_t notused133; //Byte 133
+  byte vvtCLholdDuty; //Byte 126
+  byte vvtCLKP; //Byte 127
+  byte vvtCLKI; //Byte 128
+  byte vvtCLKD; //Byte 129
+  int16_t vvtCL0DutyAng; //Bytes 130-131
+  uint8_t vvtCLMinAng; //Byte 132
+  uint8_t vvtCLMaxAng; //Byte 133
 
   byte crankingEnrichTaper; //Byte 134
 
