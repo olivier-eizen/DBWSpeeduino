@@ -1076,7 +1076,7 @@ struct config6 {
   byte airDenBins[9];
   byte airDenRates[9];
   byte boostFreq;   /// Frequency of the boost PWM valve
-  byte vvtFreq;     /// Frequency of the vvt PWM valve
+  byte dbwFreq;     /// Frequency of the vvt PWM valve
   byte idleFreq;
   // Launch stuff, see beginning of speeduino.ino main loop
   byte launchPin : 6; ///< Launch (control ?) pin
