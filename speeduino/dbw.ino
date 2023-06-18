@@ -20,7 +20,7 @@ long dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
 long dbw_loop_speed = 0;
 long dbw_loop_speed_cur = 0;
 long dbw_precision = 10;
-double PEDAL, PWM, TPS;
+double DBW_TARGET, PWM, TPS;
 double KP = 0, KI = 0, KD = 0;
 double loopInterval = 2000;
 
@@ -41,17 +41,17 @@ ISR(TIMER1_COMPB_vect) {
   if (!dbw_calibration_tps) {
     unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_high_limit);
 
-    if (PEDAL < (1 * 2) && !dbw_autotune_tps) {
+    if (DBW_TARGET < (1 * 2) && !dbw_autotune_tps) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
       DBW2_PIN_LOW();
-    } else if(PEDAL > (99 * 2) && !dbw_autotune_tps) {
+    } else if (DBW_TARGET > (99 * 2) && !dbw_autotune_tps) {
       DBW1_PIN_HIGH();
-      DBW2_PIN_LOW();      
+      DBW2_PIN_LOW();
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
       dbw_pwm_state = false;
-    } else if(dbw_pwm_target_value > 0) {
+    } else if (dbw_pwm_target_value > 0) {
       posi(_pwm);
     } else {
       nega(_pwm);
@@ -61,13 +61,13 @@ ISR(TIMER1_COMPB_vect) {
 
 void posi(unsigned long pwm) {
   if (dbw_pwm_state) {
-    DBW1_PIN_LOW(); // Be sure both signal are off
-    DBW2_PIN_LOW(); // Be sure both signal are off
+    DBW1_PIN_LOW();  // Be sure both signal are off
+    DBW2_PIN_LOW();  // Be sure both signal are off
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
     dbw_pwm_state = false;
   } else {
     DBW1_PIN_HIGH();
-    DBW2_PIN_LOW(); // Be sure signal is off
+    DBW2_PIN_LOW();  // Be sure signal is off
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
     dbw_pwm_cur_value = pwm;
     dbw_pwm_state = true;
@@ -81,7 +81,7 @@ void nega(unsigned long pwm) {
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
     dbw_pwm_state = false;
   } else {
-    DBW1_PIN_LOW(); // Be sure signal is off
+    DBW1_PIN_LOW();  // Be sure signal is off
     DBW2_PIN_HIGH();
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
     dbw_pwm_cur_value = pwm;
@@ -98,7 +98,12 @@ void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
     readTpsDBW(false);  // smh it need to be there
-    PEDAL = currentStatus.pedal;
+    // if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < 70) {
+    // DBW_TARGET = get3DTableValue(&dbwIdleTable, currentStatus.MAP, currentStatus.RPM);  // Idle
+    // } else {
+    DBW_TARGET = get3DTableValue(&dbwTable, (currentStatus.pedal * 2), currentStatus.RPM);  // Driving
+    // }
+    // DBW_TARGET = currentStatus.pedal;
     TPS = currentStatus.TPS;
 
     if (tuner.isFinished() && dbw_autotune_tps) {
@@ -267,5 +272,5 @@ void saveGain() {
 
 void startPid() {
   dbwPID.stop();
-  dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP / dbw_precision, configPage10.dbwKI / dbw_precision, configPage10.dbwKD / dbw_precision);
+  dbwPID.begin(&TPS, &PWM, &DBW_TARGET, configPage10.dbwKP / dbw_precision, configPage10.dbwKI / dbw_precision, configPage10.dbwKD / dbw_precision);
 }
