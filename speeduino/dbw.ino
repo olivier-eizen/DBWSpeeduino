@@ -19,6 +19,7 @@ long dbw_pwm_low_limit = -(dbw_pwm_max_count - 1);
 long dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
 long dbw_loop_speed = 0;
 long dbw_loop_speed_cur = 0;
+long dbw_precision = 10;
 double PEDAL, PWM, TPS;
 double KP = 0, KI = 0, KD = 0;
 double loopInterval = 2000;
@@ -32,7 +33,7 @@ void initialiseDbw() {
     dbwPID.setOutputLimits(dbw_pwm_low_limit, dbw_pwm_high_limit);
     dbwPID.setWindUpLimits(-20, 20);
 
-    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+    startPid();
   }
 }
 
@@ -41,23 +42,32 @@ ISR(TIMER1_COMPB_vect) {
     unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_high_limit);
 
     if (PEDAL < (1 * 2) && !dbw_autotune_tps) {
-      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
+      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
       DBW2_PIN_LOW();
-    } else {
+    } else if(PEDAL > (99 * 2) && !dbw_autotune_tps) {
+      DBW1_PIN_HIGH();
+      DBW2_PIN_LOW();      
+      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
+      dbw_pwm_state = false;
+    } else if(dbw_pwm_target_value > 0) {
       posi(_pwm);
+    } else {
+      nega(_pwm);
     }
   }
 }
 
 void posi(unsigned long pwm) {
   if (dbw_pwm_state) {
-    DBW1_PIN_LOW();
+    DBW1_PIN_LOW(); // Be sure both signal are off
+    DBW2_PIN_LOW(); // Be sure both signal are off
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
     dbw_pwm_state = false;
   } else {
     DBW1_PIN_HIGH();
+    DBW2_PIN_LOW(); // Be sure signal is off
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
     dbw_pwm_cur_value = pwm;
     dbw_pwm_state = true;
@@ -66,10 +76,12 @@ void posi(unsigned long pwm) {
 
 void nega(unsigned long pwm) {
   if (dbw_pwm_state) {
-    DBW2_PIN_LOW();
+    DBW1_PIN_LOW();  // Be sure both signal are off
+    DBW2_PIN_LOW();  // Be sure both signal are off
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
     dbw_pwm_state = false;
   } else {
+    DBW1_PIN_LOW(); // Be sure signal is off
     DBW2_PIN_HIGH();
     SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + pwm);
     dbw_pwm_cur_value = pwm;
@@ -85,18 +97,13 @@ void measureLoopTime() {
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
-    readTpsDBW(false); // smh it need to be there
+    readTpsDBW(false);  // smh it need to be there
     PEDAL = currentStatus.pedal;
     TPS = currentStatus.TPS;
 
     if (tuner.isFinished() && dbw_autotune_tps) {
-      configPage10.dbwKP = tuner.getKp();
-      configPage10.dbwKI = tuner.getKi();
-      configPage10.dbwKD = tuner.getKd();
-      writeConfig(10);
-      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
-      dbwPID.stop();
-      dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+      saveGain();
+      startPid();
       dbw_autotune_tps = false;
     }
 
@@ -240,7 +247,7 @@ void readTpsDBW(bool useFilter) {
 void dbwCalibrationAuto() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
     dbw_autotune_tps = true;
-    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+    startPid();
     tuner = PIDAutotuner();
     tuner.setTargetInputValue(180);
     tuner.setLoopInterval(dbw_loop_speed);
@@ -248,4 +255,17 @@ void dbwCalibrationAuto() {
     tuner.setZNMode(PIDAutotuner::znModeNoOvershoot);
     tuner.startTuningLoop();
   }
+}
+
+void saveGain() {
+  configPage10.dbwKP = tuner.getKp() * dbw_precision;
+  configPage10.dbwKI = tuner.getKi() * dbw_precision;
+  configPage10.dbwKD = tuner.getKd() * dbw_precision;
+  writeConfig(10);
+  BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
+}
+
+void startPid() {
+  dbwPID.stop();
+  dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP / dbw_precision, configPage10.dbwKI / dbw_precision, configPage10.dbwKD / dbw_precision);
 }
