@@ -9,11 +9,16 @@
 #include "src/PID_v1/PID_v1.h"
 #include "storage.h"
 #include "timers.h"
-#define frequencePWMde490hz 0b00000100
 
 byte dbwCounter = 0;
 ArduPID dbwPID;
+PIDAutotuner tuner;
 bool dbw_calibration_tps = false;
+bool dbw_autotune_tps = false;
+long dbw_pwm_low_limit = -(dbw_pwm_max_count - 1);
+long dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
+long dbw_loop_speed = 0;
+long dbw_loop_speed_cur = 0;
 double PEDAL, PWM, TPS;
 double KP = 0, KI = 0, KD = 0;
 double loopInterval = 2000;
@@ -22,7 +27,9 @@ void initialiseDbw() {
   if (configPage10.dbwEnabled == 1) {
     pinMode(configPage10.dbw1Pin, OUTPUT);
     pinMode(configPage10.dbw2Pin, OUTPUT);
-    dbwPID.setOutputLimits(-(dbw_pwm_max_count - 1), +(dbw_pwm_max_count - 1));
+    dbw_pwm_low_limit = -(dbw_pwm_max_count - 1);
+    dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
+    dbwPID.setOutputLimits(dbw_pwm_low_limit, dbw_pwm_high_limit);
     dbwPID.setWindUpLimits(-20, 20);
 
     dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
@@ -31,9 +38,9 @@ void initialiseDbw() {
 
 ISR(TIMER1_COMPB_vect) {
   if (!dbw_calibration_tps) {
-    unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_max_count - 1);
+    unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_high_limit);
 
-    if (PEDAL < (1 * 2)) {
+    if (PEDAL < (1 * 2) && !dbw_autotune_tps) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + (dbw_pwm_max_count - dbw_pwm_cur_value));
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
@@ -70,31 +77,37 @@ void nega(unsigned long pwm) {
   }
 }
 
-void actuateDBW() {
-  // if (PWM > 0) {
-  //   DBW1_PIN_HIGH();  // Switch pin high
-  //   // analogWrite(configPage10.dbw1Pin, abs(PWM));
-  //   // analogWrite(configPage10.dbw2Pin, 0);
-  // } else {
-  //   DBW1_PIN_LOW();  // Switch pin to low
-  //   // analogWrite(configPage10.dbw1Pin, 0);
-  //   // analogWrite(configPage10.dbw2Pin, abs(PWM));
-  // }
+void measureLoopTime() {
+  dbw_loop_speed = micros() - dbw_loop_speed_cur;
+  dbw_loop_speed_cur = micros();
 }
 
 void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
-    if(dbwCounter > 31) {
-      dbwCounter = 0;
-      dbwPID.stop();
-      dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
-    }
+    readTpsDBW(false); // smh it need to be there
     PEDAL = currentStatus.pedal;
     TPS = currentStatus.TPS;
-    dbwPID.compute();
 
-    currentStatus.dbwDuty = map(PWM, -(dbw_pwm_max_count - 1), +(dbw_pwm_max_count - 1), 0, 200);
+    if (tuner.isFinished() && dbw_autotune_tps) {
+      configPage10.dbwKP = tuner.getKp();
+      configPage10.dbwKI = tuner.getKi();
+      configPage10.dbwKD = tuner.getKd();
+      writeConfig(10);
+      BIT_SET(currentStatus.status4, BIT_STATUS4_DBW_REFRESH);
+      dbwPID.stop();
+      dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
+      dbw_autotune_tps = false;
+    }
+
+    if (dbw_autotune_tps) {
+      PWM = tuner.tunePID(TPS);  // Set PWM
+    } else {
+      dbwPID.compute();  // Set PWM
+      measureLoopTime();
+    }
+
+    currentStatus.dbwDuty = map(PWM, 0, dbw_pwm_high_limit, 0, 200);
     dbw_pwm_target_value = PWM;
     dbwCounter++;
   }
@@ -226,31 +239,13 @@ void readTpsDBW(bool useFilter) {
 
 void dbwCalibrationAuto() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
-    dbw_calibration_tps = true;
+    dbw_autotune_tps = true;
     dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
-    PIDAutotuner tuner = PIDAutotuner();
-    tuner.setTargetInputValue(90);
-    tuner.setLoopInterval(loopInterval);
-    tuner.setOutputRange(-255, 255);
+    tuner = PIDAutotuner();
+    tuner.setTargetInputValue(180);
+    tuner.setLoopInterval(dbw_loop_speed);
+    tuner.setOutputRange(1, dbw_pwm_high_limit);
     tuner.setZNMode(PIDAutotuner::znModeNoOvershoot);
     tuner.startTuningLoop();
-
-    unsigned long microseconds;
-    while (!tuner.isFinished()) {
-      microseconds = micros();
-      readTpsDBW(false);
-      TPS = map(currentStatus.TPS, 0, 200, 0, 100);
-      PWM = tuner.tunePID(TPS);
-      actuateDBW();
-      while (micros() - microseconds < loopInterval) delayMicroseconds(1);
-    }
-
-    configPage10.dbwKP = tuner.getKp();
-    configPage10.dbwKI = tuner.getKi();
-    configPage10.dbwKD = tuner.getKd();
-    dbwPID.stop();
-
-    dbwPID.begin(&TPS, &PWM, &PEDAL, configPage10.dbwKP, configPage10.dbwKI, configPage10.dbwKD);
-    dbw_calibration_tps = false;
   }
 }
