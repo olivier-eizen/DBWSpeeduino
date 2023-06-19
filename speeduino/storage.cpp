@@ -232,7 +232,7 @@ void writeConfig(uint8_t pageNum)
       | 8x8 table itself + the 8 values along each of the axis
       -----------------------------------------------------*/
       result = writeTable(&boostTable, decltype(boostTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG7_MAP1));
-      result = writeTable(&vvtTable, decltype(vvtTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG7_MAP2));
+      result = writeTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG7_MAP2));
       result = writeTable(&stagingTable, decltype(stagingTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG7_MAP3));
       break;
 
@@ -283,7 +283,7 @@ void writeConfig(uint8_t pageNum)
       | 4x4 Dwell table itself + the 4 values along each of the axis
       -----------------------------------------------------*/
       result = writeTable(&dbwTable, decltype(dbwTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP));
-      result = writeTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP2));
+      // result = writeTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP2));
       result = writeTable(&dwellTable, decltype(dwellTable)::type_key, result.changeWriteAddress(EEPROM_CONFIG12_MAP3));
       break;
       
@@ -423,7 +423,7 @@ void loadConfig()
   //*********************************************************************************************************************************************************************************
   // Boost and vvt tables load
   loadTable(&boostTable, decltype(boostTable)::type_key, EEPROM_CONFIG7_MAP1);
-  loadTable(&vvtTable, decltype(vvtTable)::type_key,  EEPROM_CONFIG7_MAP2);
+  loadTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key,  EEPROM_CONFIG7_MAP2);
   loadTable(&stagingTable, decltype(stagingTable)::type_key, EEPROM_CONFIG7_MAP3);
 
   //*********************************************************************************************************************************************************************************
@@ -453,7 +453,7 @@ void loadConfig()
   //*********************************************************************************************************************************************************************************
   // WMI, VVT2 and Dwell table load
   loadTable(&dbwTable, decltype(dbwTable)::type_key, EEPROM_CONFIG12_MAP);
-  loadTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, EEPROM_CONFIG12_MAP2);
+  // loadTable(&dbwIdleTable, decltype(dbwIdleTable)::type_key, EEPROM_CONFIG12_MAP2);
   loadTable(&dwellTable, decltype(dwellTable)::type_key, EEPROM_CONFIG12_MAP3);
 
   //*********************************************************************************************************************************************************************************

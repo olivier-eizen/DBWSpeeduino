@@ -469,17 +469,17 @@ void doUpdates()
   if(readEEPROMVersion() == 17)
   {
     //VVT stuff has now 0.5 accuracy, so shift values in vvt table by one.
-    auto table_it = vvtTable.values.begin();
-    while (!table_it.at_end())
-    {
-      auto row = *table_it;
-      while (!row.at_end())
-      {
-        *row = *row << 1;
-        ++row;
-      }      
-      ++table_it;
-    }
+    // auto table_it = vvtTable.values.begin();
+    // while (!table_it.at_end())
+    // {
+    //   auto row = *table_it;
+    //   while (!row.at_end())
+    //   {
+    //     *row = *row << 1;
+    //     ++row;
+    //   }      
+    //   ++table_it;
+    // }
 
     configPage10.vvtCLholdDuty = configPage10.vvtCLholdDuty << 1;
     configPage10.vvtCLminDuty = configPage10.vvtCLminDuty << 1;
@@ -563,18 +563,18 @@ void doUpdates()
     if(configPage10.spark2Algorithm == LOAD_SOURCE_TPS) { multiplyTableLoad(&ignitionTable2, ignitionTable2.type_key, 4); }
     multiplyTableLoad(&boostTable, boostTable.type_key, 2); // Boost table used 1.0 previously, so it only needs a 2x multiplier
 
-    if(configPage6.vvtLoadSource == VVT_LOAD_TPS)
-    {
-      //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they only need to be multiplied by 2 when updating
-      multiplyTableLoad(&vvtTable, vvtTable.type_key, 2);
-      // multiplyTableLoad(&vvt2Table, vvt2Table.type_key, 2);
-    }
-    else
-    {
-      //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they need to be divided by 2 when updating
-      divideTableLoad(&vvtTable, vvtTable.type_key, 2);
-      // divideTableLoad(&vvt2Table, vvt2Table.type_key, 2);
-    }
+    // if(configPage6.vvtLoadSource == VVT_LOAD_TPS)
+    // {
+    //   //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they only need to be multiplied by 2 when updating
+    //   multiplyTableLoad(&vvtTable, vvtTable.type_key, 2);
+    //   // multiplyTableLoad(&vvt2Table, vvt2Table.type_key, 2);
+    // }
+    // else
+    // {
+    //   //NOTE: The VVT tables all had 1.0 as the multiply value rather than 2.0 used in all other tables. For this reason they need to be divided by 2 when updating
+    //   divideTableLoad(&vvtTable, vvtTable.type_key, 2);
+    //   // divideTableLoad(&vvt2Table, vvt2Table.type_key, 2);
+    // }
 
 
     configPage4.vvtDelay = 0;

@@ -1020,7 +1020,7 @@ void sendPageASCII()
       Serial.println(F("\nBoost Map"));
       serial_print_3dtable(&boostTable, boostTable.type_key);
       Serial.println(F("\nVVT Map"));
-      serial_print_3dtable(&vvtTable, vvtTable.type_key);
+      serial_print_3dtable(&dbwIdleTable, dbwIdleTable.type_key);
       break;
 
     case seqFuelPage:

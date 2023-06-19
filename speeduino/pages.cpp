@@ -324,7 +324,7 @@ page_iterator_t map_page_offset_to_entity(uint8_t pageNumber, uint16_t offset)
     case boostvvtPage: //Boost, VVT and staging maps (all 8x8)
     {
       CHECK_TABLE(boostvvtPage, offset, &boostTable, 0)
-      CHECK_TABLE(boostvvtPage, offset, &vvtTable, 1)
+      CHECK_TABLE(boostvvtPage, offset, &dbwIdleTable, 1)
       CHECK_TABLE(boostvvtPage, offset, &stagingTable, 2)
       END_OF_PAGE(boostvvtPage, 3)
     }
@@ -351,9 +351,9 @@ page_iterator_t map_page_offset_to_entity(uint8_t pageNumber, uint16_t offset)
     case wmiMapPage:
     {
       CHECK_TABLE(wmiMapPage, offset, &dbwTable, 0)
-      CHECK_TABLE(wmiMapPage, offset, &dbwIdleTable, 1)
-      CHECK_TABLE(wmiMapPage, offset, &dwellTable, 2)
-      END_OF_PAGE(wmiMapPage, 3)
+      // CHECK_TABLE(wmiMapPage, offset, &dbwIdleTable, 1)
+      CHECK_TABLE(wmiMapPage, offset, &dwellTable, 1)
+      END_OF_PAGE(wmiMapPage, 2)
     }
     
     case ignMap2Page:

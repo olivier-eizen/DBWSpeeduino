@@ -451,7 +451,7 @@ extern struct table3d16RpmLoad afrTable; //16x16 afr target map
 extern struct table3d8RpmLoad stagingTable; //8x8 fuel staging table
 extern struct table3d8RpmLoad boostTable; //8x8 boost map
 extern struct table3d8RpmLoad boostTableLookupDuty; //8x8 boost map
-extern struct table3d8RpmLoad vvtTable; //8x8 vvt map
+// extern struct table3d8RpmLoad vvtTable; //8x8 vvt map
 extern struct table3d8RpmLoad dbwTable; ///< 8x8 boost map
 extern struct table3d8RpmLoad dbwIdleTable; ///< 8x8 boost map
 // extern struct table3d8RpmLoad vvt2Table; //8x8 vvt map
