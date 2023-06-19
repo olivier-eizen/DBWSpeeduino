@@ -482,8 +482,8 @@ void doUpdates()
     // }
 
     configPage10.vvtCLholdDuty = configPage10.vvtCLholdDuty << 1;
-    configPage10.vvtCLminDuty = configPage10.vvtCLminDuty << 1;
-    configPage10.vvtCLmaxDuty = configPage10.vvtCLmaxDuty << 1;
+    // configPage10.vvtCLminDuty = configPage10.vvtCLminDuty << 1;
+    // configPage10.vvtCLmaxDuty = configPage10.vvtCLmaxDuty << 1;
 
     //VVT2 added, so default values and disable it
     configPage10.vvt2Enabled = 0;

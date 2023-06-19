@@ -98,11 +98,14 @@ void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
     readTpsDBW(false);  // smh it need to be there
-    // if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < 70) {
-    // DBW_TARGET = get3DTableValue(&dbwIdleTable, currentStatus.MAP, currentStatus.RPM);  // Idle
-    // } else {
-    DBW_TARGET = get3DTableValue(&dbwTable, (currentStatus.pedal * 2), currentStatus.RPM);  // Driving
-    // }
+    if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < configPage10.dbwIdleTriggerMAP * 2  && currentStatus.RPM < configPage10.dbwIdleTriggerRPM) {
+      DBW_TARGET = get3DTableValue(&dbwIdleTable, currentStatus.MAP, currentStatus.RPM);  // Idle
+      BIT_SET(currentStatus.spark, BIT_SPARK_IDLE);
+    } else {
+      DBW_TARGET = get3DTableValue(&dbwTable, (currentStatus.pedal * 2), currentStatus.RPM);  // Driving
+      BIT_CLEAR(currentStatus.spark, BIT_SPARK_IDLE);
+    }
+
     // DBW_TARGET = currentStatus.pedal;
     TPS = currentStatus.TPS;
 

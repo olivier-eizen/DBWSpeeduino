@@ -1379,8 +1379,10 @@ struct config10 {
 
   // byte wmiAdvBins[6]; //Bytes 159-164
   // byte wmiAdvAdj[6];  //Additional advance (in degrees) 
-  byte vvtCLminDuty; // 171
-  byte vvtCLmaxDuty;
+  // byte vvtCLminDuty; // 171
+  // byte vvtCLmaxDuty;
+  byte dbwIdleTriggerRPM;
+  byte dbwIdleTriggerMAP;
   byte vvt2Pin : 6;
   byte vvt2Enabled : 1;
   byte TrigEdgeThrd : 1;
