@@ -16,7 +16,7 @@ PIDAutotuner tuner;
 bool dbw_calibration_tps = false;
 bool dbw_autotune_tps = false;
 bool dbw_error = false;
-long dbw_error_admissible = 10;
+// long configPage10.dbwSensorTolerance = 10;
 long dbw_pwm_low_limit = -(dbw_pwm_max_count - 1);
 long dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
 long dbw_loop_speed = 0;
@@ -48,12 +48,12 @@ ISR(TIMER1_COMPB_vect) {
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
       DBW2_PIN_LOW();
-    } else if (DBW_TARGET < (1 * 2) && !dbw_autotune_tps) {
+    } else if (DBW_TARGET < configPage10.dbwFCT && !dbw_autotune_tps) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
       DBW2_PIN_LOW();
-    } else if (DBW_TARGET > (98.5 * 2) && !dbw_autotune_tps) {
+    } else if (DBW_TARGET > configPage10.dbwWOT && !dbw_autotune_tps) {
       DBW1_PIN_HIGH();
       DBW2_PIN_LOW();
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
@@ -107,7 +107,7 @@ void dbw() {
     readTpsDBW(false);  // smh it need to be there
     TPS = currentStatus.TPS;
 
-    if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < configPage10.dbwIdleTriggerMAP * 2 && currentStatus.RPM < configPage10.dbwIdleTriggerRPM) {
+    if (currentStatus.pedal < configPage10.dbwFCT && currentStatus.MAP < configPage10.dbwIdleTriggerMAP * 2 && currentStatus.RPM < configPage10.dbwIdleTriggerRPM) {
       DBW_TARGET = get3DTableValue(&dbwIdleTable, currentStatus.MAP, currentStatus.RPM);  // Idle
       BIT_SET(currentStatus.spark, BIT_SPARK_IDLE);
     } else {
@@ -210,7 +210,7 @@ void readPedal() {
     currentStatus.pedal2 = map(tempPEDAL2, configPage10.pedal2Min, configPage10.pedal2Max, 0, 200);
 
     // if both Signal exceed 5% difference
-    if (abs(currentStatus.pedal1 - currentStatus.pedal2) > (dbw_error_admissible * 2)) {
+    if (abs(currentStatus.pedal1 - currentStatus.pedal2) > (configPage10.dbwSensorTolerance)) {
       dbw_error = true;
     }
 
@@ -265,7 +265,7 @@ void readTpsDBW(bool useFilter) {
   currentStatus.tps2 = map(tempTPS2, configPage10.throttle2Min, configPage10.throttle2Max, 0, 200);
 
   // if both Signal exceed 5% difference
-  if (abs(currentStatus.tps1 - currentStatus.tps2) > (dbw_error_admissible * 2)) {
+  if (abs(currentStatus.tps1 - currentStatus.tps2) > (configPage10.dbwSensorTolerance)) {
     dbw_error = true;
   }
 

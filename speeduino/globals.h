@@ -1307,9 +1307,13 @@ struct config10 {
   byte fuel2InputPolarity : 1;
   byte fuel2InputPullup : 1;
 
-  byte vvtCLholdDuty; //Byte 126
-  byte vvtCLKP; //Byte 127
-  byte vvtCLKI; //Byte 128
+  byte dbwWOT; // WIDE OPEN THROTTLE DBW TOLERANCE LIMITS
+  byte dbwFCT; // FULLY CLOSE THROTTLE DBW TOLERANCE LIMITS
+  byte dbwSensorTolerance; // DBW TOLERANCE LIMITS
+
+  // byte vvtCLholdDuty; //Byte 126
+  // byte vvtCLKP; //Byte 127
+  // byte vvtCLKI; //Byte 128
   byte vvtCLKD; //Byte 129
   int16_t vvtCL0DutyAng; //Bytes 130-131
   uint8_t vvtCLMinAng; //Byte 132

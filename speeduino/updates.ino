@@ -352,10 +352,10 @@ void doUpdates()
     else { configPage6.idleKI = configPage6.idleKI<<5; }
     if(configPage6.idleKD >= 8) { configPage6.idleKD = 255; }
     else { configPage6.idleKD = configPage6.idleKD<<5; }
-    if(configPage10.vvtCLKP >= 8) { configPage10.vvtCLKP = 255; }
-    else { configPage10.vvtCLKP = configPage10.vvtCLKP<<5; }
-    if(configPage10.vvtCLKI >= 8) { configPage10.vvtCLKI = 255; }
-    else { configPage10.vvtCLKI = configPage10.vvtCLKI<<5; }
+    // if(configPage10.vvtCLKP >= 8) { configPage10.vvtCLKP = 255; }
+    // else { configPage10.vvtCLKP = configPage10.vvtCLKP<<5; }
+    // if(configPage10.vvtCLKI >= 8) { configPage10.vvtCLKI = 255; }
+    // else { configPage10.vvtCLKI = configPage10.vvtCLKI<<5; }
     if(configPage10.vvtCLKD >= 8) { configPage10.vvtCLKD = 255; }
     else { configPage10.vvtCLKD = configPage10.vvtCLKD<<5; }
 
@@ -481,7 +481,7 @@ void doUpdates()
     //   ++table_it;
     // }
 
-    configPage10.vvtCLholdDuty = configPage10.vvtCLholdDuty << 1;
+    // configPage10.vvtCLholdDuty = configPage10.vvtCLholdDuty << 1;
     // configPage10.vvtCLminDuty = configPage10.vvtCLminDuty << 1;
     // configPage10.vvtCLmaxDuty = configPage10.vvtCLmaxDuty << 1;
 
