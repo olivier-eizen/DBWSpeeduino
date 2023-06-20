@@ -15,6 +15,8 @@ ArduPID dbwPID;
 PIDAutotuner tuner;
 bool dbw_calibration_tps = false;
 bool dbw_autotune_tps = false;
+bool dbw_error = false;
+long dbw_error_admissible = 10;
 long dbw_pwm_low_limit = -(dbw_pwm_max_count - 1);
 long dbw_pwm_high_limit = +(dbw_pwm_max_count - 1);
 long dbw_loop_speed = 0;
@@ -41,12 +43,17 @@ ISR(TIMER1_COMPB_vect) {
   if (!dbw_calibration_tps) {
     unsigned long _pwm = constrain(abs(dbw_pwm_target_value), 1, dbw_pwm_high_limit);
 
-    if (DBW_TARGET < (1 * 2) && !dbw_autotune_tps) {
+    if (dbw_error) {
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
       dbw_pwm_state = false;
       DBW1_PIN_LOW();
       DBW2_PIN_LOW();
-    } else if (DBW_TARGET > (99 * 2) && !dbw_autotune_tps) {
+    } else if (DBW_TARGET < (1 * 2) && !dbw_autotune_tps) {
+      SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
+      dbw_pwm_state = false;
+      DBW1_PIN_LOW();
+      DBW2_PIN_LOW();
+    } else if (DBW_TARGET > (98.5 * 2) && !dbw_autotune_tps) {
       DBW1_PIN_HIGH();
       DBW2_PIN_LOW();
       SET_COMPARE(DBW_TIMER_COMPARE, DBW_TIMER_COUNTER + dbw_pwm_max_count);
@@ -98,16 +105,15 @@ void dbw() {
   if (configPage10.dbwEnabled == 1) {
     ENABLE_DBW_TIMER();
     readTpsDBW(false);  // smh it need to be there
-    if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < configPage10.dbwIdleTriggerMAP * 2  && currentStatus.RPM < configPage10.dbwIdleTriggerRPM) {
+    TPS = currentStatus.TPS;
+
+    if (currentStatus.pedal < (1 * 2) && currentStatus.MAP < configPage10.dbwIdleTriggerMAP * 2 && currentStatus.RPM < configPage10.dbwIdleTriggerRPM) {
       DBW_TARGET = get3DTableValue(&dbwIdleTable, currentStatus.MAP, currentStatus.RPM);  // Idle
       BIT_SET(currentStatus.spark, BIT_SPARK_IDLE);
     } else {
       DBW_TARGET = get3DTableValue(&dbwTable, (currentStatus.pedal * 2), currentStatus.RPM);  // Driving
       BIT_CLEAR(currentStatus.spark, BIT_SPARK_IDLE);
     }
-
-    // DBW_TARGET = currentStatus.pedal;
-    TPS = currentStatus.TPS;
 
     if (tuner.isFinished() && dbw_autotune_tps) {
       saveGain();
@@ -132,6 +138,7 @@ void dbwCalibrationPedalMin() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
     configPage10.pedal1Min = fastMap1023toX(analogRead(configPage10.dbwPedalPin1), 255);
     configPage10.pedal2Min = fastMap1023toX(analogRead(configPage10.dbwPedalPin2), 255);
+    dbw_error = false;
   }
 }
 
@@ -139,6 +146,7 @@ void dbwCalibrationPedalMax() {
   if (configPage10.dbwEnabled == 1 && currentStatus.RPM == 0) {
     configPage10.pedal1Max = fastMap1023toX(analogRead(configPage10.dbwPedalPin1), 255);
     configPage10.pedal2Max = fastMap1023toX(analogRead(configPage10.dbwPedalPin2), 255);
+    dbw_error = false;
   }
 }
 
@@ -157,6 +165,7 @@ void dbwCalibrationTPS() {
     configPage10.throttle1Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin1), 255);
     configPage10.throttle2Min = fastMap1023toX(analogRead(configPage10.dbwThrotlePin2), 255);
     dbw_calibration_tps = false;
+    dbw_error = false;
   }
 }
 
@@ -199,6 +208,11 @@ void readPedal() {
 
     currentStatus.pedal1 = map(tempPEDAL1, configPage10.pedal1Min, configPage10.pedal1Max, 0, 200);
     currentStatus.pedal2 = map(tempPEDAL2, configPage10.pedal2Min, configPage10.pedal2Max, 0, 200);
+
+    // if both Signal exceed 5% difference
+    if (abs(currentStatus.pedal1 - currentStatus.pedal2) > (dbw_error_admissible * 2)) {
+      dbw_error = true;
+    }
 
     currentStatus.pedal = (currentStatus.pedal1 + currentStatus.pedal2) / 2;
   }
@@ -249,6 +263,12 @@ void readTpsDBW(bool useFilter) {
 
   currentStatus.tps1 = map(tempTPS1, configPage10.throttle1Min, configPage10.throttle1Max, 0, 200);
   currentStatus.tps2 = map(tempTPS2, configPage10.throttle2Min, configPage10.throttle2Max, 0, 200);
+
+  // if both Signal exceed 5% difference
+  if (abs(currentStatus.tps1 - currentStatus.tps2) > (dbw_error_admissible * 2)) {
+    dbw_error = true;
+  }
+
   currentStatus.TPS = (currentStatus.tps1 + currentStatus.tps2) / 2;
 }
 
